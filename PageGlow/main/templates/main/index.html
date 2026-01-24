@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load main_extras %}
+{% block content %}
+
+<!--<h1> {{ title }}</h1>-->
+
+<!--{% include 'main/includes/nav.html' %}-->
+
+<a class="addbutton btn btn-primary" href="{% url 'addpage' %}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+fill="currentColor" viewBox="0 0 24 24" >
+<!--Boxicons v3.0.8 https://boxicons.com | License  https://docs.boxicons.com/free-->
+<path d="M3 13h8v8h2v-8h8v-2h-8V3h-2v8H3z"></path>
+</svg>
+</a>
+
+{% for p in posts %}
+<article class="post">
+
+    <h2>{{ p.title }}</h2>
+    <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}} {{p.author.username|default:'Неизвестно'}}</p>
+    {% if p.photo %}
+        <p><img class="img-article-left thumb" src="{{p.photo.url}}" alt=""></p>
+    {% endif %}
+    {% autoescape off %}
+    <p class="meta">{{ p.meta }}</p>
+    {{ p.content|linebreaks|truncatewords:40|safe }}
+    {% endautoescape %}
+    <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>
+</article>
+{% endfor %}
+{% endblock %}
+
+{% block navigation %}
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation example" class="list-pages">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" aria-label="Previous" href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+        </li>
+        {% endif %}
+        {% for p in paginator.page_range %}
+        {% if page_obj.number == p %}
+        <li class="page-link disabled">{{p}}</li>
+        {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ p }}">{{p}}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" aria-label="Next" href="?page={{ page_obj.next_page_number }}">&gt;</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+</body>
+</html>

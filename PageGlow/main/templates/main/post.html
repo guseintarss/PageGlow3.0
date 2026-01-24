@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load main_extras %}
+
+{% block content %}
+<article class="post">
+    <h1>{{post.title}}</h1>
+    <p class="meta">Категория: {{post.cat.name}} &bull; Дата: {{post.time_update|date:"d.m.Y"}}</p>
+
+    {% autoescape off %}
+    {% if post.photo %}
+    <p><img class="img-article" src="{{post.photo.url}}"></p>
+    {% endif %}
+
+    {{post.content|safe}}
+    {% endautoescape %}
+    {% with post.tags.all as tags %}
+    {% if tags %}
+    <p class="t-title">Теги:</p>
+    <ul class="tags-list">
+        {% for t in tags %}
+        <li><a class="tag" href="{{t.get_absolute_url}}">{{t.tag}}</a></li>
+        {% endfor %}
+    </ul>
+    {%endif%}
+    {% endwith %}
+    <hr>
+    <h1>Комментарии. {{post.comments_post.all.count}}</h1>
+    {% for com in post.comments_post.all %}
+    <hr>
+    <div class="author">
+        <div class="user-photo">
+            {% if user.photo %}
+            <p><img class="user-img-head" src="{{ com.author.photo.url }}">
+            {% else %}
+            <p><img class="user-img-head" src="{{ default_image }}">
+            {% endif %}{{com.author}}
+        </div>
+    </div>
+    <div class="comment">
+        {{com.content}}
+    </div>
+    <div class="create_date">
+        {{com.created}}
+    </div>
+    <hr>
+    {% endfor %}
+    <p>Добавить комментарии</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button class="btn btn-primary">Оставить комментарий</button>
+    </form>
+</article>
+
+
+
+{% endblock %}

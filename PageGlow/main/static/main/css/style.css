@@ -1,0 +1,272 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  color: #333;
+  background-color: #f9f9f9;
+}
+/*Шапка сайта*/
+.logo{
+    color:white;
+    margin-left:9.9em;
+    margin-right:19.5em;
+    font-size: 28px;
+}
+
+header{
+    position: sticky;
+    top:0;
+    z-index:1000;
+    justify-content: space-between;
+    align-items: center;
+    transition: top 3s ease;
+}
+
+header ul{
+    display: flex;
+    align-items: center;
+    background-color: #1c3e7e;
+    height: 48px;
+}
+
+ul .menu-bar{
+    list-style-type: none;
+    padding: 10px 10px;
+    display: inline-block;
+    transition:0.2s ease;
+}
+
+ul .menu-bar .nav-bar{
+    padding: 10px ;
+    color: white;
+    text-decoration: none;
+}
+
+ul .last{
+    list-style-type: none;
+    margin-left:0.5rem;
+}
+
+ul .login-last{
+    margin-left: 15rem;
+}
+
+ul .last .nav-bar:hover{
+    background-color: #4c9ef5;
+}
+
+ul .last .nav-bar{
+    padding: 9px 20px;
+    color: white;
+    text-decoration: none;
+    background-color: #0c6acf;
+    border-radius: 20px;
+    transition:0.2s ease;
+}
+
+.user-img-article{
+    width: 100px;
+    height:100px;
+    border-radius:50%;
+    border:1px solid gray;
+}
+
+
+.user-img-head{
+    width: 40px;
+    height:40px;
+    border-radius:20%;
+    border:1px solid gray;
+    margin-left: 5px;
+    margin-top: auto;
+}
+
+
+.user-profile{
+    text-decoration:none;
+    color:white;
+}
+
+.user-name{
+    margin-left: 15rem;
+}
+
+.user-name p{
+    color:white;
+}
+
+ul .menu-bar:hover{
+    background-color: #0852a1;
+}
+
+.container{
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+}
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 30px 0;
+  gap: 30px;
+}
+.content {
+  flex:1 1 70%;
+  min-width: 300px;
+}
+
+.img-article-left{
+    width:100%;
+}
+
+.img-article{
+    width:100%;
+}
+
+.post {
+    position: relative;
+  margin-top:10px;
+  background: white;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+
+.post:hover {
+  transform: translateY(-3px);
+}
+.post h2 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.meta {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.read-more {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}
+
+.wrapper {
+    display: flex;
+    gap: 20px;
+}
+
+.sidebar {
+    margin-top: 10px;
+    width: 300px;
+    position: -webkit-sticky; /* Для Safari */
+    position: sticky;
+    top: 20px; /* Отступ от верха экрана при «прилипании» */
+    height: fit-content; /* Высота по содержимому */
+    min-width: 300px;
+    max-height:1000px;
+    flex: 0 0 25%; /* Сайдбар занимает ~25% ширины */
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.addbutton{
+    position: fixed;
+    width: 70px;
+    height:40px;
+    bottom:25px;
+    right: 25px;
+    color: white;
+}
+
+.delete-post{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    color:red;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* Блоки идут друг под другом */
+  }
+
+  .content, .sidebar {
+    flex: 1 1 100%; /* Каждый блок занимает всю ширину */
+  }
+}
+
+.site-footer {
+  background-color: #f8f9fa;
+  padding: 40px 0;
+  font-family: Arial, sans-serif;
+}
+
+.site-footer {
+  background-color: #f8f9fa;
+  padding: 40px 0;
+  font-family: Arial, sans-serif;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.footer-logo h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.footer-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-nav li {
+  margin-bottom: 8px;
+}
+
+.footer-nav a,
+.footer-contacts a,
+.footer-social a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.footer-nav a:hover,
+.footer-contacts a:hover,
+.footer-social a:hover {
+  text-decoration: underline;
+}
+
+.footer-copyright p {
+  color: #6c757d;
+  font-size: 14px;
+  margin-top: 20px;
+}
+

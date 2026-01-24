@@ -1,0 +1,168 @@
+from gc import get_objects
+
+from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic.edit import FormMixin, DeleteView
+from markdown import markdown as md
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.uploadedfile import UploadedFile
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
+from django.urls import reverse, reverse_lazy
+from django.views import View
+from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
+from django.contrib import messages
+
+from PageGlow import settings
+from .forms import AddPostForm, UploadFileForm, CommentForm
+from .models import Post, Category, TagPost, UploadFiles
+from .utils import DataMixin
+
+
+
+class MainHome(DataMixin, ListView):
+    template_name = 'main/index.html'
+    context_object_name = 'posts'
+    title_page = 'Главная страница'
+    cat_selected = 0
+
+    def get_queryset(self):
+        return Post.published.all().select_related('cat', 'author')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Конвертируем Markdown в HTML для каждого поста
+        for article in context['posts']:
+            article.content = md(article.content)
+
+        return context
+
+# class CustomSuccessMessageMixin:
+#     @property
+#     def success_msg(self):
+#         return False
+#
+#     def form_valid(self, form):
+#         messages.success(self.request, self.success_msg)
+#         return super().form_valid(form)
+#
+#     def get_success_url(self):
+#         return '%s?id=%s' % (self.success_url(), self.object.id)
+
+class ShowPost(FormMixin, DataMixin, DetailView):
+    template_name = 'main/post.html'
+    slug_url_kwarg = 'post_slug'
+    context_object_name = 'post'
+    form_class = CommentForm
+    success_msg = 'Комментарий оставлен'
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.post = self.get_object()
+        self.object.author = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'].content = md(context['post'].content)
+        return self.get_mixin_context(context, title=context['post'].title)
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Post.published, slug=self.kwargs[self.slug_url_kwarg])
+
+
+@login_required
+def about(request):
+    context = {
+        'default_image': settings.DEFAULT_USER_IMAGE,
+    }
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            fp = UploadFiles(file=form.cleaned_data['file'])
+            fp.save()
+    else:
+        form = UploadFileForm()
+    return render(request, 'main/about.html', {'title' : 'О сайте', 'form': form, 'context': context})
+
+def contact(request):
+    return render(request, 'main/contact.html')
+
+class AddPage(LoginRequiredMixin, DataMixin, CreateView):
+    form_class = AddPostForm
+    template_name = 'main/addpage.html'
+    title_page = 'Добавление статьи'
+
+    def form_valid(self, form):
+        w = form.save(commit=False)
+        w.author = self.request.user
+        return super().form_valid(form)
+
+class UpdatePage(DataMixin, UpdateView):
+    model = Post
+    fields = ['title', 'content', 'photo', 'is_published', 'cat']
+    template_name = 'main/addpage.html'
+    success_url = reverse_lazy('home')
+    title_page = 'Редактирование статьи'
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('edit_page', kwargs={'post_slug': self.get_object().slug})
+
+def login(request):
+    return render(request, 'main/login.html')
+
+
+class PostDeleteView(LoginRequiredMixin, DataMixin, DeleteView):
+    model = Post
+    success_url = reverse_lazy('users:profile')
+
+    def form_valid(self, form):
+        print(f"Удален объект: {self.object}")
+        return super().form_valid(form)
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user)
+
+class MainCategory(DataMixin, ListView):
+    template_name = 'main/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_queryset(self):
+        return Post.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cat = context["posts"][0].cat
+        return self.get_mixin_context(context, title='Категория - ' + cat.name, cat_selected=cat.pk)
+
+
+def page_not_found(request, exception):
+    return render(request, '404.html', status=404)
+
+class TagPostList(DataMixin, ListView):
+    template_name = 'main/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag = TagPost.objects.get(slug=self.kwargs['tag_slug'])
+        return self.get_mixin_context(context, title='Тег: ' + tag.tag)
+
+    def get_queryset(self):
+        return Post.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')

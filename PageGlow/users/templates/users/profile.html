@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="post">
+
+    <div class="user-photo">
+        {% if user.photo %}
+        <p><img class="user-img-article" src="{{ user.photo.url }}">
+        {% else %}
+        <p><img class="user-img-article" src="{{ default_image }}">
+        {% endif %}
+    </div>
+
+    <h1>{{user.username}}</h1>
+
+    <p><span class="span">{{user.last_name}} {{user.first_name}}</span></p>
+    <a href="{% url 'users:edit_profile' %}"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+fill="currentColor" viewBox="0 0 24 24" >
+<path d="M5 21h14c1.1 0 2-.9 2-2v-7h-2v7H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2"/><path d="M7 13v3c0 .55.45 1 1 1h3c.27 0 .52-.11.71-.29l9-9a.996.996 0 0 0 0-1.41l-3-3a.996.996 0 0 0-1.41 0l-9.01 8.99A1 1 0 0 0 7 13m10-7.59L18.59 7 17.5 8.09 15.91 6.5zm-8 8 5.5-5.5 1.59 1.59-5.5 5.5H9z"/>
+</svg></a>
+    <form style="display:inline-block" method="post" action="{% url 'users:logout' %}">
+        {% csrf_token %}
+        <button class="btn btn-primary position-absolute bottom-0 end-0" type="submit"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+fill="currentColor" viewBox="0 0 24 24" >
+<path d="M14.29 6.71 18.59 11 9 11 9 13 18.59 13 14.29 17.29 15.71 18.71 22.41 12 15.71 5.29 14.29 6.71z"/><path d="m11,5v-2C6.04,3,2,7.04,2,12s4.04,9,9,9v-2c-3.86,0-7-3.14-7-7s3.14-7,7-7Z"/>
+</svg></button>
+    </form>
+</div>
+<nav>
+
+</nav>
+<h2>Посты пользователя {{user.username}}</h2>
+    {% for p in posts %}
+<article class="post">
+
+    <h2>{{ p.title }}</h2>
+    <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}} {{p.author.username|default:'Неизвестно'}}</p>
+    {% if p.photo %}
+        <p><img class="img-article-left thumb" src="{{p.photo.url}}" alt=""></p>
+    {% endif %}
+    {% autoescape off %}
+    <p class="meta">{{ p.meta }}</p>
+    {{ p.content|linebreaks|truncatewords:40|safe }}
+    {% endautoescape %}
+    <p><a class="read-more" href="{% url 'edit_page' p.slug %}">Редактировать пост</a></p>
+    <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>
+    <p><a class="delete-post" href="{% url 'users:article-delete' p.slug %}"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" >
+<path d="M17 6V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H2v2h2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8h2V6zM9 4h6v2H9zM6 20V8h12v12z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path>
+</svg></a></p>
+</article>
+{% empty %}
+<p>Постов нет</p>
+{% endfor %}
+{% endblock %}

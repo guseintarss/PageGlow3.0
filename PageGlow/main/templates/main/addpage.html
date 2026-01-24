@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load main_extras %}
+
+{% block content %}
+<div class="post">
+    <h1>{{title}}</h1>
+    <form class="article-form" action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+
+        <div class="form-error">{{ form.non_field_errors }}</div>
+        {% for f in  form %}
+        {{ form.media }}
+        {% if forloop.counter == 3 %}
+        <div class="btn-group mb-3" role="group">
+            <button type="button" class="btn btn-outline-primary" id="btn-edit">Редактор</button>
+            <button type="button" class="btn btn-outline-primary" id="btn-preview">Предпросмотр</button>
+        </div>
+        {%endif%}
+        <div {% if forloop.counter == 2 %} id='editor-container'{% elif forloop.counter == 4 %} class=""{% endif %}>
+        <p><label {% if forloop.counter == 4 %}class="form-check-label" {%else%}class="form-label"{% endif %} for="{{ f.id_for_label }}">{{f.label}}</label>{{ f }}</p>
+        </div>
+        <div class="form-error">{{ f.errors }}</div>
+        {% if forloop.counter == 2 %}
+
+        <div class="margin-2" style="display: none;" id="preview-container">
+            <p><label class="form-label" for="{{ f.id_for_label }}">Предпросмотр</label></p>
+            <div id="preview" class="rounded border border-2 p-3 gray" style="min-height: 300px;"></div>
+        </div>
+        {%endif%}
+        {% endfor %}
+
+        <div class="form-actions">
+            <p><button class="btn btn-primary" type="submit">Отправить</button></p>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

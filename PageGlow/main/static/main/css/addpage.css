@@ -1,0 +1,72 @@
+.form-error{
+    color: red;
+    font-size: 15px;
+}
+
+
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  resize: vertical;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: gray;
+  box-shadow: 0 0 0 3px light-gray;
+}
+
+input[type="email"],
+textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  resize: vertical;
+}
+
+input[type="email"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: gray;
+  box-shadow: 0 0 0 3px light-gray;
+}
+
+textarea {
+  min-height: 200px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #0c6acf;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0852a1;
+}
