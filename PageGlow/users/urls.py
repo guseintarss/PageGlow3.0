@@ -2,11 +2,14 @@ from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordCh
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.urls import path, reverse_lazy
 
+from rest_framework.routers import DefaultRouter
 from main.views import PostDeleteView
 from . import views
-from .views import EditProfileUser
+from .views import EditProfileUser, RuleViewSet
 
 app_name = 'users'
+router = DefaultRouter()
+router.register(r'rules', RuleViewSet, basename='rule')
 
 urlpatterns = [
     path('login/', views.LoginUser.as_view(), name='login'),

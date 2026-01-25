@@ -4,12 +4,19 @@ from django.urls import path, include
 from PageGlow import settings
 from main.views import page_not_found
 
+from rest_framework.routers import DefaultRouter
+from users.views import RuleViewSet
+
+router = DefaultRouter()
+router.register(r'rules', RuleViewSet, basename='rule')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include("main.urls")),
     path('users/',include("users.urls", namespace='users')),
     path("__debug__/", include("debug_toolbar.urls")),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    # path('api/', include(router.urls)),
 ]
 
 if settings.DEBUG:
