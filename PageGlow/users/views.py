@@ -1,12 +1,16 @@
 from gc import get_objects
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.shortcuts import render, get_object_or_404
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseForbidden, Http404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, CreateView, UpdateView
+from django.views.generic import FormView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
@@ -25,8 +29,59 @@ class LoginUser(LoginView):
     template_name = 'users/login.html'
     extra_context = {'title': 'Авторизация'}
 
-    # def get_success_url(self):
-    #     return reverse_lazy('home')
+    def user_detail(request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            if not user.is_active:
+                return HttpResponseForbidden("Пользователь неактивен")
+        except User.DoesNotExist:
+            raise Http404("Пользователь не найден")
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        confirm = request.POST.get('confirm', '').strip().lower()
+
+        confirm_options = ['y', 'да', 'Подтверждаю','yes', 'удалить', 'delete']
+        if confirm not in confirm_options:
+            messages.error(request, 'Для удаления аккаунта необходимо подтверждение. Введите "да" или "удалить".')
+            # Возвращаем на страницу подтверждения
+            extra_context = {
+                'title': 'Подтверждение удаления аккаунта',
+                'default_image': settings.DEFAULT_USER_IMAGE,
+                'user': user,
+            }
+            return render(request, 'users/delete_user.html', extra_context)
+        try:
+            user.is_active = not user.is_active
+            user.save()
+            messages.success(request, f'Пользователь {user.username} успешно деактивирован.')
+
+            if request.user.id == user_id:
+                from django.contrib.auth import logout
+                logout(request)
+                return redirect('users:login')
+            return redirect('users:register')
+
+        except Exception as e:
+            messages.error(request, f'Произошла ошибка при деактивации: {str(e)}')
+            extra_context = {
+                'title': 'Подтверждение удаления аккаунта',
+                'default_image': settings.DEFAULT_USER_IMAGE,
+                'user': user,
+            }
+            return render(request, 'users/delete_user.html', extra_context)
+
+    extra_context = {
+        'title': 'Подтверждение удаления аккаунта',
+        'default_image': settings.DEFAULT_USER_IMAGE,
+        'user': user,
+    }
+    return render(request, 'users/delete_user.html', extra_context)
+
+# def get_success_url(self):
+#     return reverse_lazy('home')
 
 class RegisterUser(CreateView):
     form_class = RegisterUserForm
@@ -67,6 +122,12 @@ class UserPasswordChange(PasswordChangeView):
     success_url = reverse_lazy('users:password_change_done')
     template_name = 'users/password_change_form.html'
 
+
+def deactivate_user(request):
+    user = User.objects.get(id=request.user.id)
+    user.is_active=False
+    user.save()
+    return render(request, 'users/deactivate_user.html')
 
 class RuleViewSet(viewsets.ModelViewSet):
     queryset = Rule.objects.all()
