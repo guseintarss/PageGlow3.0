@@ -1,6 +1,6 @@
 from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, \
     PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.urls import path, reverse_lazy
+from django.urls import path, reverse_lazy, include
 
 from rest_framework.routers import DefaultRouter
 from main.views import PostDeleteView
@@ -16,7 +16,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', views.RegisterUser.as_view(), name='register'),
     path('user/<int:user_id>/toggle-active/', views.delete_user, name='delete_user'),
-
+    path('', include(router.urls)),
     path('profile/', views.profile_user, name='profile'),
     path('articles/<slug:slug>/delete/', PostDeleteView.as_view(), name='article-delete'),
     path('edit_profile/', views.EditProfileUser.as_view(), name='edit_profile'),

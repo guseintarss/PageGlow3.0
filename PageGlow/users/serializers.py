@@ -4,4 +4,4 @@ from .models import Rule
 class RuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rule
-        fields = ['id', 'key', 'value', 'description', 'is_active']
+        fields = ['__all__']

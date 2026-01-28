@@ -12,8 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 
-from rest_framework import viewsets
-from rest_framework.permissions import IsAdminUser
+from rest_framework import viewsets, permissions
 
 from PageGlow import settings
 from main.models import Post
@@ -123,16 +122,16 @@ class UserPasswordChange(PasswordChangeView):
     template_name = 'users/password_change_form.html'
 
 
-def deactivate_user(request):
-    user = User.objects.get(id=request.user.id)
-    user.is_active=False
-    user.save()
-    return render(request, 'users/deactivate_user.html')
+# def deactivate_user(request):
+#     user = User.objects.get(id=request.user.id)
+#     user.is_active=False
+#     user.save()
+#     return render(request, 'users/deactivate_user.html')
 
 class RuleViewSet(viewsets.ModelViewSet):
     queryset = Rule.objects.all()
     serializer_class = RuleSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAdminUser]
 
     def perform_create(self, serializer):
         serializer.save()
