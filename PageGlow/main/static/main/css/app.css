@@ -89,6 +89,9 @@ a:hover{ text-decoration: underline; }
   object-fit: cover;
   background: rgba(255,255,255,0.08);
 }
+.username a{
+    text-decoration:none;
+}
 .login-pill{
   padding: 8px 14px;
   border-radius: 999px;

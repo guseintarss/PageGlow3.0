@@ -20,16 +20,18 @@ fill="currentColor" viewBox="0 0 24 24" >
 </svg></a>
     <form style="display:inline-block" method="post" action="{% url 'users:logout' %}">
         {% csrf_token %}
-        <button class="btn btn-primary position-absolute bottom-0 end-0" type="submit"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+        <button class="btn btn-primary position-absolute mt-5 end-0 m-3" type="submit"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 fill="currentColor" viewBox="0 0 24 24" >
 <path d="M14.29 6.71 18.59 11 9 11 9 13 18.59 13 14.29 17.29 15.71 18.71 22.41 12 15.71 5.29 14.29 6.71z"/><path d="m11,5v-2C6.04,3,2,7.04,2,12s4.04,9,9,9v-2c-3.86,0-7-3.14-7-7s3.14-7,7-7Z"/>
 </svg></button>
     </form>
+    <hr>
+    <h4>Посты пользователя {{user.username}}</h4>
 </div>
 <nav>
 
 </nav>
-<h2>Посты пользователя {{user.username}}</h2>
+
     {% for p in posts %}
 <article class="post">
 

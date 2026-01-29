@@ -16,9 +16,16 @@ fill="currentColor" viewBox="0 0 24 24" >
 
 {% for p in posts %}
 <article class="post">
+    <div class="user-area">
+        {% if user.photo %}
+        <img class="user-avatar" src="{{ user.photo.url }}">
+        {% else %}
+        <img class="user-img-article" src="{{ default_image }}">
+        {% endif %}
+        <a class="user-username">{{p.author.username|default:'Неизвестно'}}</a>
 
+    </div>
     <h2>{{ p.title }}</h2>
-    <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}} {{p.author.username|default:'Неизвестно'}}</p>
     {% if p.photo %}
         <p><img class="img-article-left thumb" src="{{p.photo.url}}" alt=""></p>
     {% endif %}
@@ -26,6 +33,8 @@ fill="currentColor" viewBox="0 0 24 24" >
     <p class="meta">{{ p.meta }}</p>
     {{ p.content|linebreaks|truncatewords:40|safe }}
     {% endautoescape %}
+    <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}}</p>
+
     <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>
 </article>
 {% endfor %}
