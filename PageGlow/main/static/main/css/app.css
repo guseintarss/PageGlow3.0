@@ -1,0 +1,305 @@
+/* PageGlow - global responsive styles */
+
+:root{
+  --bg: #f7f8fb;
+  --surface: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #0c6acf;
+  --primary-700: #0852a1;
+  --shadow: 0 2px 10px rgba(0,0,0,0.06);
+  --radius: 12px;
+
+  /* Dark (Obsidian-like) */
+  --obs-bg: #0f1115;
+  --obs-surface: #14171d;
+  --obs-text: rgba(255,255,255,0.86);
+  --obs-muted: rgba(255,255,255,0.56);
+  --obs-border: rgba(255,255,255,0.10);
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+img{ max-width: 100%; height: auto; display: block; }
+a{ color: inherit; text-decoration: none; }
+a:hover{ text-decoration: underline; }
+
+.pg-container{
+  width: min(1200px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+/* Header */
+.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #1c3e7e;
+  color: #fff;
+}
+.header-inner{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+.brand{
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.top-nav{
+  display: flex;
+  gap: 6px;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+}
+.top-nav a{
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+.top-nav a:hover{
+  background: rgba(255,255,255,0.12);
+  text-decoration: none;
+}
+.user-area{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.user-avatar{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.25);
+  object-fit: cover;
+  background: rgba(255,255,255,0.08);
+}
+.login-pill{
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+}
+.login-pill:hover{
+  background: var(--primary-700);
+  text-decoration: none;
+}
+
+/* Layout */
+.page{
+  padding: 22px 0 32px;
+}
+.layout{
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 22px;
+  align-items: start;
+}
+.content{
+  min-width: 0;
+}
+.sidebar{
+  position: sticky;
+  top: 82px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+/* Cards / posts */
+.post{
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.post h1, .post h2{
+  margin: 0 0 10px 0;
+  line-height: 1.25;
+}
+.meta{
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 12px 0;
+}
+.read-more{
+  color: var(--primary);
+  font-weight: 600;
+}
+.read-more:hover{
+  color: var(--primary-700);
+  text-decoration: underline;
+}
+
+.img-article, .img-article-left{
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+/* Avatars used in profile/comments */
+.user-img-article{
+  width: 96px;
+  height: 96px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  background: rgba(0,0,0,0.04);
+}
+
+.user-img-head{
+  width: 40px;
+  height:40px;
+  border-radius:20%;
+  border:1px solid gray;
+  margin-left: 5px;
+  margin-top: auto;
+}
+
+
+/* Forms */
+.form-error, .form-error ul li{
+  color: #b91c1c;
+  list-style: none;
+}
+.form-label{
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select{
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fff;
+}
+textarea{ min-height: 160px; resize: vertical; }
+input:focus, textarea:focus, select:focus{
+  outline: none;
+  border-color: rgba(12,106,207,0.65);
+  box-shadow: 0 0 0 4px rgba(12,106,207,0.12);
+}
+.form-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* Buttons (works alongside Bootstrap) */
+.btn{
+  border-radius: 10px;
+}
+.btn-primary{
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.btn-primary:hover{
+  background-color: var(--primary-700);
+  border-color: var(--primary-700);
+}
+
+/* Floating add button */
+.addbutton{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(12,106,207,0.25);
+}
+
+/* Tags / categories */
+.cat-list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cat-selected .cat{
+  background: #e5e7eb;
+  color: #111827;
+  cursor: default;
+  text-decoration: none;
+}
+.tags-list{ list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.tag{
+  padding: 6px 12px;
+  background: #eef2ff;
+  color: #3730a3;
+  border-radius: 999px;
+  border: 1px solid rgba(55,48,163,0.15);
+  font-size: 0.9rem;
+}
+.tag:hover{ text-decoration: none; filter: brightness(0.98); }
+.t-title{ font-weight: 700; margin-top: 18px; }
+
+/* Icons/links inside post cards */
+.delete-post{
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  color: #dc2626;
+}
+.delete-post:hover{ color: #b91c1c; text-decoration: none; }
+
+/* Footer */
+.site-footer{
+  background: #f8f9fa;
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+}
+.footer-container{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  align-items: flex-start;
+}
+.footer-nav ul{ list-style: none; padding: 0; margin: 0; }
+.footer-nav a, .footer-contacts a, .footer-social a{ color: var(--primary); }
+.footer-social{ display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Responsive */
+@media (max-width: 992px){
+  .layout{ grid-template-columns: 1fr; }
+  .sidebar{ position: static; }
+  .user-area{ width: 100%; justify-content: flex-end; }
+}
+
+@media (max-width: 520px){
+  .header-inner{ gap: 10px; }
+  .top-nav a{ padding: 8px 10px; }
+  .addbutton{ right: 14px; bottom: 14px; }
+}
+

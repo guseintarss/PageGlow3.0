@@ -179,30 +179,36 @@ DEFAULT_USER_IMAGE = MEDIA_URL + 'users/default.png'
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
+
 CKEDITOR_CONFIGS = {
     'default': {
-        'toolbar': [
-            {'name': 'document', 'items': ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
-            {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
-            {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt']},
-            {'name': 'basicstyles', 'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-            {'name': 'paragraph', 'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl']},
-            {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
-            {'name': 'insert', 'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak']},
-            '/',
-            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
-            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
-            {'name': 'tools', 'items': ['Maximize', 'ShowBlocks', '-', 'About']},
-        ],
-        'extraPlugins': 'uploadimage',
-        'removePlugins': 'flash,iframe',
-        'height': 700,
+        'toolbar': 'Full',  # полный набор инструментов
+        # или: 'Basic', 'Mini' либо кастомный список (см. ниже)
+
+        'height': 400,
         'width': '100%',
-        'uiColor': '#dfe8f6',
-        'language': 'ru',
+        'tabSpaces': 4,
+        'extraPlugins': ','.join([
+            'uploadimage',  # загрузка изображений
+            'autogrow',   # авторост высоты
+            'codesnippet', # вставка кода с подсветкой
+        ]),
+        'codeSnippet_theme': 'monokai',  # тема подсветки кода
+        'removePlugins': 'elementspath',  # отключить ненужные плагины
+        'allowedContent': True,  # отключить фильтрацию HTML (осторожно!)
+        # 'contentsCss': '/static/css/ckeditor-custom.css',  # кастомные стили
+    },
+    # Можно добавить другие конфигурации под разные задачи
+    'simple': {
+        'toolbar': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat']
+        ],
+        'height': 200,
     }
 }
-
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,

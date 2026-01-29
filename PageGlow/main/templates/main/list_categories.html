@@ -1,7 +1,10 @@
+<p class="t-title">Категории:</p>
+<ul class="cat-list">
 {% for cat in cats %}
-{% if cat.id == cat_selected %}
-<li class="selected">{{cat.name}}</li>
-{% else %}
-<li class="cat-cloud"><a class="cat" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
-{% endif %}
+  {% if cat.id == cat_selected %}
+    <li class="cat-selected"><span class="cat">{{ cat.name }}</span></li>
+  {% else %}
+    <li><a class="cat" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+  {% endif %}
 {% endfor %}
+</ul>

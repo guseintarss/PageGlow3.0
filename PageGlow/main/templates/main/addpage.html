@@ -38,3 +38,57 @@
 </div>
 
 {% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('id_content');
+    const preview = document.getElementById('preview');
+    const editorContainer = document.getElementById('editor-container');
+    const previewContainer = document.getElementById('preview-container');
+
+    const btnEdit = document.getElementById('btn-edit');
+    const btnPreview = document.getElementById('btn-preview');
+
+    if (!input || !preview || !editorContainer || !previewContainer || !btnEdit || !btnPreview) {
+        return;
+    }
+
+    function updatePreview() {
+        try {
+            preview.innerHTML = marked.parse(input.value || '');
+        } catch (e) {
+            preview.textContent = 'Ошибка в Markdown-разметке';
+        }
+    }
+
+    function showEditor() {
+        editorContainer.style.display = 'block';
+        previewContainer.style.display = 'none';
+    }
+
+    function showPreview() {
+        editorContainer.style.display = 'none';
+        previewContainer.style.display = 'block';
+        updatePreview();
+    }
+
+    btnEdit.addEventListener('click', showEditor);
+    btnPreview.addEventListener('click', showPreview);
+
+    input.addEventListener('input', function() {
+        if (previewContainer.style.display !== 'none') {
+            updatePreview();
+        }
+    });
+
+    // По умолчанию: режим редактора на мобильных, предпросмотра на больших экранах
+    if (window.matchMedia('(max-width: 768px)').matches) {
+        showEditor();
+    } else {
+        showPreview();
+    }
+});
+</script>
+{% endblock %}

@@ -14,7 +14,7 @@ class AddPostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'content', 'photo', 'is_published', 'cat', 'tags']
         widgets = {
-            'content': CKEditorWidget(attrs={'rows': 20, 'class': 'form-control', 'id': 'ckeditor-field' }),
+            'content': CKEditorWidget(config_name='default', attrs={'rows': 20, 'class': 'form-control', 'id': 'ckeditor-field'}),
             # 'content_markdawn': forms.Textarea(attrs={'rows': 20,'class':'form-control', 'id': 'markdown-field', 'style': 'display: none;'}),
             # 'is_published': forms.CheckboxInput(attrs={'class':'form-check-input'}),
             'photo': forms.ClearableFileInput(attrs={'class':'form-control'}),
