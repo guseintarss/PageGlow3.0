@@ -1,27 +1,26 @@
 from django import forms
 from django.core.validators import MinLengthValidator
 
-from ckeditor.widgets import CKEditorWidget
+from django_ckeditor_5.widgets import CKEditor5Widget
 from markdown import markdown as md
 from .models import *
 
 
 class AddPostForm(forms.ModelForm):
     cat = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Не выбрано', label='Категория', widget=forms.Select(attrs={'class': 'form-select'}))
-    content = forms.CharField(label='Текст', widget=CKEditorWidget(config_name='default'))
+    content = forms.CharField(label='Текст', widget=CKEditor5Widget(config_name='default'))
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields["text"].required = False
 
     class Meta:
         model = Post
         fields = ['title', 'content', 'photo', 'is_published', 'cat', 'tags']
         widgets = {
-            'content': CKEditorWidget(config_name='default', attrs={'rows': 20, 'class': 'form-control', 'id': 'ckeditor-field'}),
-            # 'content_markdawn': forms.Textarea(attrs={'rows': 20,'class':'form-control', 'id': 'markdown-field', 'style': 'display: none;'}),
-            # 'is_published': forms.CheckboxInput(attrs={'class':'form-check-input'}),
+            'content': CKEditor5Widget(config_name='default', attrs={'rows': 20, 'class': 'form-control', 'id': 'ckeditor-field'}),
             'photo': forms.ClearableFileInput(attrs={'class':'form-control'}),
             'tags': forms.SelectMultiple(attrs={'class':'form-control'}),
-        }
-        label = {
-            'content': 'Текст'
         }
     def clean_title(self):
         title = self.cleaned_data['title']

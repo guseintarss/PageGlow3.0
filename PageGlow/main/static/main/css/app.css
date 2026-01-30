@@ -34,7 +34,7 @@ a{ color: inherit; text-decoration: none; }
 a:hover{ text-decoration: underline; }
 
 .pg-container{
-  width: min(1200px, calc(100% - 32px));
+  width: min(1100px, calc(100% - 32px));
   margin-inline: auto;
 }
 

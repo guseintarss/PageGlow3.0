@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load main_extras %}
+
 
 {% block content %}
 <article class="post">
@@ -10,9 +10,10 @@
     {% if post.photo %}
     <p><img class="img-article" src="{{post.photo.url}}"></p>
     {% endif %}
-
     {{post.content|safe}}
+
     {% endautoescape %}
+
     {% with post.tags.all as tags %}
     {% if tags %}
     <p class="t-title">Теги:</p>

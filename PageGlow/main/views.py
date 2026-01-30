@@ -2,7 +2,6 @@ from gc import get_objects
 
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import FormMixin, DeleteView
-from markdown import markdown as md
 from requests import Response
 
 from django.contrib.auth.decorators import login_required
@@ -35,10 +34,6 @@ class MainHome(DataMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # Конвертируем Markdown в HTML для каждого поста
-        for article in context['posts']:
-            article.content = md(article.content)
 
         return context
 
@@ -77,11 +72,6 @@ class ShowPost(FormMixin, DataMixin, DetailView):
         self.object.author = self.request.user
         self.object.save()
         return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['post'].content = md(context['post'].content)
-        return self.get_mixin_context(context, title=context['post'].title)
 
     def get_object(self, queryset=None):
         return get_object_or_404(Post.published, slug=self.kwargs[self.slug_url_kwarg])
