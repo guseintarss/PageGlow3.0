@@ -98,20 +98,5 @@ main {
   transition: transform 0.2s;
 }
 
-input[type="password"],
-textarea {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #dee2e6;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  resize: vertical;
-}
 
-input[type="password"]:focus,
-textarea:focus {
-  outline: none;
-  border-color: gray;
-  box-shadow: 0 0 0 3px light-gray;
-}
+

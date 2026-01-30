@@ -42,7 +42,7 @@ fill="currentColor" viewBox="0 0 24 24" >
     {% endif %}
     {% autoescape off %}
     <p class="meta">{{ p.meta }}</p>
-    {{ p.content|linebreaks|truncatewords:40|safe }}
+    {{ p.content|truncatewords:40|safe }}
     {% endautoescape %}
     <p><a class="read-more" href="{% url 'edit_page' p.slug %}">Редактировать пост</a></p>
     <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>

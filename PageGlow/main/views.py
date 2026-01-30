@@ -29,6 +29,7 @@ class MainHome(DataMixin, ListView):
     title_page = 'Главная страница'
     cat_selected = 0
 
+
     def get_queryset(self):
         return Post.published.all().select_related('cat', 'author')
 

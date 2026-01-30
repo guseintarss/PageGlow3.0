@@ -126,7 +126,21 @@ a:hover{ text-decoration: underline; }
   box-shadow: var(--shadow);
   padding: 16px;
 }
+.con {
+    margin:0 auto;
+    min-width: 300px;
+    max-width:500px;
+}
 
+.auth {
+  margin-top:10px;
+  background: white;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
 /* Cards / posts */
 .post{
   position: relative;
@@ -246,7 +260,6 @@ input:focus, textarea:focus, select:focus{
   list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }

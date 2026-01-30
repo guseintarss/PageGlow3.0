@@ -180,15 +180,19 @@ DEFAULT_USER_IMAGE = MEDIA_URL + 'users/default.png'
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
 
+
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Full',  # полный набор инструментов
         # или: 'Basic', 'Mini' либо кастомный список (см. ниже)
 
-        'height': 400,
+        'height': 700,
         'width': '100%',
         'tabSpaces': 4,
         'extraPlugins': ','.join([
+            'link',
+            'devtools',
+            'templates',
             'uploadimage',  # загрузка изображений
             'autogrow',   # авторост высоты
             'codesnippet', # вставка кода с подсветкой
@@ -209,6 +213,7 @@ CKEDITOR_CONFIGS = {
         'height': 200,
     }
 }
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,

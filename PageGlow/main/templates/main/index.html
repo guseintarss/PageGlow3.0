@@ -13,17 +13,15 @@ fill="currentColor" viewBox="0 0 24 24" >
 <path d="M3 13h8v8h2v-8h8v-2h-8V3h-2v8H3z"></path>
 </svg>
 </a>
-
 {% for p in posts %}
 <article class="post">
     <div class="user-area">
-        {% if user.photo %}
-        <img class="user-avatar" src="{{ user.photo.url }}">
+        {% if p.author.photo %}
+        <img class="user-avatar" src="{{ p.author.photo.url }}">
         {% else %}
-        <img class="user-img-article" src="{{ default_image }}">
+        <img class="user-avatar" src="{{ default_image }}">
         {% endif %}
-        <a class="user-username">{{p.author.username|default:'Неизвестно'}}</a>
-
+        <a href="{% url 'users:profile' %}" class="user-username">{{p.author.username|default:'Неизвестно'}}</a>
     </div>
     <h2>{{ p.title }}</h2>
     {% if p.photo %}
@@ -31,15 +29,13 @@ fill="currentColor" viewBox="0 0 24 24" >
     {% endif %}
     {% autoescape off %}
     <p class="meta">{{ p.meta }}</p>
-    {{ p.content|linebreaks|truncatewords:40|safe }}
+    {{ p.content|truncatewords:40|safe }}
     {% endautoescape %}
     <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}}</p>
-
     <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>
 </article>
 {% endfor %}
 {% endblock %}
-
 {% block navigation %}
 {% if page_obj.has_other_pages %}
 <nav aria-label="Page navigation example" class="list-pages">
@@ -67,6 +63,5 @@ fill="currentColor" viewBox="0 0 24 24" >
 </nav>
 {% endif %}
 {% endblock %}
-
 </body>
 </html>

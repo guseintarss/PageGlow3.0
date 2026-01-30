@@ -8,7 +8,7 @@ from .models import *
 
 class AddPostForm(forms.ModelForm):
     cat = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label='Не выбрано', label='Категория', widget=forms.Select(attrs={'class': 'form-select'}))
-    content = forms.CharField(widget=CKEditorWidget(config_name='default'))
+    content = forms.CharField(label='Текст', widget=CKEditorWidget(config_name='default'))
 
     class Meta:
         model = Post
