@@ -1,5 +1,6 @@
 from gc import get_objects
 
+from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import FormMixin, DeleteView
 from requests import Response
@@ -74,7 +75,15 @@ class ShowPost(FormMixin, DataMixin, DetailView):
         return super().form_valid(form)
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Post.published, slug=self.kwargs[self.slug_url_kwarg])
+        post = get_object_or_404(Post.published, slug=self.kwargs[self.slug_url_kwarg])
+        allowed_tags = [
+            'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'ul', 'ol', 'li', 'strong', 'em', 'a', 'img',
+            'blockquote', 'code', 'pre', 'i'
+        ]
+
+        post.content = clean(post.content, tags=allowed_tags)
+        return post
 
 
 @login_required

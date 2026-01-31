@@ -1,7 +1,7 @@
 from PageGlow import settings
 
 menu = [
-    {'title': "Новости", 'url_name': 'addpage'},
+    {'title': "Написать статью", 'url_name': 'addpage'},
     {'title': "О сайте", 'url_name': 'about'},
     {'title': "Контакты", 'url_name': 'contact'},
 ]

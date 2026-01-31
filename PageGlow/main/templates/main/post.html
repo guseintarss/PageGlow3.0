@@ -3,16 +3,20 @@
 
 {% block content %}
 <article class="post">
+    <div class="post-content">
     <h1>{{post.title}}</h1>
     <p class="meta">Категория: {{post.cat.name}} &bull; Дата: {{post.time_update|date:"d.m.Y"}}</p>
 
-    {% autoescape off %}
-    {% if post.photo %}
-    <p><img class="img-article" src="{{post.photo.url}}"></p>
-    {% endif %}
-    {{post.content|safe}}
 
-    {% endautoescape %}
+        {% if post.photo %}
+        <p><img class="img-article" src="{{post.photo.url}}"></p>
+        {% endif %}
+
+        {% autoescape off %}
+        {{post.content|safe}}
+        {% endautoescape %}
+    </div>
+
 
     {% with post.tags.all as tags %}
     {% if tags %}

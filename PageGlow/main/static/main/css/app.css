@@ -117,6 +117,28 @@ a:hover{ text-decoration: underline; }
 .content{
   min-width: 0;
 }
+
+.post-content {
+    margin: 20px 0;
+}
+
+.post-content blockquote {
+    margin: 15px;
+    padding-left: 20px;
+    border-left: 4px solid #47a3ff;
+}
+
+.post-content pre {
+    background: #f4f4f4;
+    padding: 10px;
+    margin: 15px 0;
+}
+
+.post-content i {
+    font-style: italic;
+}
+
+
 .sidebar{
   position: sticky;
   top: 82px;

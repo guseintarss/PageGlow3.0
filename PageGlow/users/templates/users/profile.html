@@ -40,10 +40,12 @@ fill="currentColor" viewBox="0 0 24 24" >
     {% if p.photo %}
         <p><img class="img-article-left thumb" src="{{p.photo.url}}" alt=""></p>
     {% endif %}
-    {% autoescape off %}
-    <p class="meta">{{ p.meta }}</p>
-    {{ p.content|truncatewords:40|safe }}
-    {% endautoescape %}
+    <div class="post-content">
+        {% autoescape off %}
+        <p class="meta">{{ p.meta }}</p>
+        {{ p.content|truncatewords:40|safe }}
+        {% endautoescape %}
+    </div>
     <p><a class="read-more" href="{% url 'edit_page' p.slug %}">Редактировать пост</a></p>
     <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>
     <p><a class="delete-post" href="{% url 'users:article-delete' p.slug %}"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" >

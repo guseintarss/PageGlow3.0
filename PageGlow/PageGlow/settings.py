@@ -44,7 +44,6 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
     'django_ckeditor_5',
-    'ckeditor_uploader',
     'rest_framework',
     'djoser',
 
@@ -208,6 +207,7 @@ customColorPalette = [
 # CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] # optional
 CKEDITOR_5_CONFIGS = {
     'default': {
+        'language': 'ru-RU',
         'htmlSupport': {
             'allowAttributes': {
                 '*': {
@@ -247,7 +247,7 @@ CKEDITOR_5_CONFIGS = {
                     'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat',
                     'insertTable',
                     ],
-            'shouldNotGroupWhenFull': 'true'
+            'shouldNotGroupWhenFull': True
         },
         'language': 'ru-RU',
         'image': {
@@ -285,9 +285,9 @@ CKEDITOR_5_CONFIGS = {
     },
     'list': {
         'properties': {
-            'styles': 'true',
-            'startIndex': 'true',
-            'reversed': 'true',
+            'styles': True,
+            'startIndex': True,
+            'reversed': True,
         }
     }
 
