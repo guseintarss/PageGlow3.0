@@ -47,6 +47,7 @@
         </div>
 
         <aside class="sidebar" aria-label="Боковая панель">
+            {% block sidebar %}{% endblock %}
             {% show_categories %}
             {% show_all_tags %}
         </aside>

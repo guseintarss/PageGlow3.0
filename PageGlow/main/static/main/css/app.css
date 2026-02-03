@@ -343,7 +343,12 @@ input:focus, textarea:focus, select:focus{
 }
 .tag:hover{ text-decoration: none; filter: brightness(0.98); }
 .t-title{ font-weight: 700; margin-top: 18px; }
-
+.com-t{
+display:flex;
+}
+.comments{
+    margin-right:5px;
+}
 /* Icons/links inside post cards */
 .delete-post{
   position: absolute;

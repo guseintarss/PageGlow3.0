@@ -29,7 +29,9 @@
     {%endif%}
     {% endwith %}
     <hr>
-    <h1>Комментарии. {{post.comments_post.all.count}}</h1>
+    <p class="com-t"><img class="comments" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAfElEQVR4nO3UQQqAIBAF0K/dLTxCN2nbTaM6RtpEMIULEUNHovrwV8J/MAuBPzdiACwAKLMTgDYEzAXGiTuGgPMxJw1v2O8AlNhqgJY+keYN9xiAEs5SFVDSJ1KvATaJz24F0MUAUwCxMSA3vQeJAD4iBoARUeDIIA1c2QE1b6WvmSReFwAAAABJRU5ErkJggg==" alt="comments--v1">
+        {{post.comments_post.all.count}}
+    </p>
 </article>
 
 
@@ -51,9 +53,9 @@
         {{com.created}}
     </div>
 </article>
-<article class="post">
     {% endfor %}
-    <p>Добавить комментарии</p>
+<article class="post">
+    <h4>Добавить комментарии</h4>
     <form action="" method="post">
         {% csrf_token %}
         {{form.as_p}}
