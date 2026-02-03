@@ -13,12 +13,17 @@
 <body class="{% block body_class %}{% endblock %}">
 <header class="site-header">
     <div class="pg-container header-inner">
+        <button id="burger" class="header__burger-menu">
+            <span></span><span></span><span></span>
+        </button>
         <a class="brand" href="{% url 'home' %}">PageGlow</a>
 
         <nav class="top-nav" aria-label="Основное меню">
+            <ul class="menu-list">
             {% for m in mainmenu %}
-                <a href="{% url m.url_name %}">{{ m.title }}</a>
+                <li><a class="menu_link" href="{% url m.url_name %}">{{ m.title }}</a></li>
             {% endfor %}
+            </ul>
         </nav>
 
         <div class="user-area">
@@ -84,7 +89,18 @@
     </div>
   </div>
 </footer>
-
 {% block extra_js %}{% endblock %}
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const burger = document.getElementById('burger');
+  const menu = document.getElementById('menu');
+
+  burger.addEventListener('click', () => {
+  document.querySelector('.site-header').classList.toggle('open');
+});
+
+});
+
+</script>
 </body>
 </html>

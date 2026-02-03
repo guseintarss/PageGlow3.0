@@ -1,4 +1,4 @@
-from gc import get_objects
+
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
@@ -103,16 +103,14 @@ class EditProfileUser(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
-
+@login_required
 def profile_user(request):
-    user = get_object_or_404(User, id=request.user.id)
-    post_data = request.user.posts.select_related('author').all()
+    post_data = request.user.posts.select_related('author', 'cat').all()
 
     extra_context = {
         'title': 'Профиль пользователя',
         'default_image': settings.DEFAULT_USER_IMAGE,
         'posts': post_data,
-        'user': user,
     }
     return render(request, 'users/profile.html', extra_context)
 

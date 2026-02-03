@@ -2,7 +2,6 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from django_ckeditor_5.widgets import CKEditor5Widget
-from markdown import markdown as md
 from .models import *
 
 

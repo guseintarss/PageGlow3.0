@@ -1,4 +1,4 @@
-from gc import get_objects
+
 
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
@@ -121,7 +121,7 @@ class UpdatePage(DataMixin, UpdateView):
     title_page = 'Редактирование статьи'
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('edit_page', kwargs={'post_slug': self.get_object().slug})
+        return reverse_lazy('edit_page', kwargs={'slug': self.get_object().slug})
 
 def login(request):
     return render(request, 'main/login.html')
@@ -166,4 +166,4 @@ class TagPostList(DataMixin, ListView):
         return self.get_mixin_context(context, title='Тег: ' + tag.tag)
 
     def get_queryset(self):
-        return Post.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')
+        return Post.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('tags')

@@ -1,5 +1,6 @@
 from django import template
 import main.views as views
+from main.forms import AddPostForm
 from main.models import Category, TagPost
 from main.utils import menu
 
