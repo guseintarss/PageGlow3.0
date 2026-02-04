@@ -122,7 +122,7 @@ class UpdatePage(DataMixin, UpdateView):
     title_page = 'Редактирование статьи'
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('edit_page', kwargs={'slug': self.get_object().slug})
+        return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
 
 def login(request):
     return render(request, 'main/login.html')

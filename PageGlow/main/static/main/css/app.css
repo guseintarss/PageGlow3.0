@@ -181,7 +181,6 @@ a:hover{ text-decoration: underline; }
     font-style: italic;
 }
 
-
 .sidebar{
   position: sticky;
   top: 82px;
@@ -370,8 +369,11 @@ display:flex;
 .footer-container{
   display: flex;
   flex-wrap: wrap;
-  gap: 18px 28px;
+  gap: 18px 110px;
   align-items: flex-start;
+}
+.footer-copyright{
+    text-align:center;
 }
 .footer-nav ul{ list-style: none; padding: 0; margin: 0; }
 .footer-nav a, .footer-contacts a, .footer-social a{ color: var(--primary); }
