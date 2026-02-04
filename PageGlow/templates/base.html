@@ -9,6 +9,12 @@
     <title>{{ title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link type="text/css" href="{% static 'main/css/app.css' %}" rel="stylesheet"/>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon-96x96.png' %}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" />
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}" />
+    <meta name="apple-mobile-web-app-title" content="MyWebSite" />
+    <link rel="manifest" href="{% static 'images/site.webmanifest' %}" />
 </head>
 <body class="{% block body_class %}{% endblock %}">
 <header class="site-header">
@@ -27,7 +33,7 @@
         </nav>
 
         <div class="user-area">
-            <a href="#">
+            <a id="search" href="#">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
                     <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M22,20l-2,2l-6,-6v-2h2z"></path><path d="M9,16c-3.9,0 -7,-3.1 -7,-7c0,-3.9 3.1,-7 7,-7c3.9,0 7,3.1 7,7c0,3.9 -3.1,7 -7,7zM9,4c-2.8,0 -5,2.2 -5,5c0,2.8 2.2,5 5,5c2.8,0 5,-2.2 5,-5c0,-2.8 -2.2,-5 -5,-5z"></path><path transform="translate(-5.90254,14.24719) rotate(-44.992)" d="M13.7,12.5h1v3.5h-1z"></path></g></g>
                 </svg>
@@ -48,6 +54,12 @@
 <main class="page">
     <div class="pg-container layout">
         <div class="content">
+            <div class="search-form">
+                <form action="{% url 'search' %}" method="get">
+                    <input type="search" placeholder="Поиск..." name="q" class="form-control" required="">
+                    <button type="submit" class="btn btn-submit"><span class="fa fa-search" aria-hidden="true"></span></button>
+                </form>
+            </div>
             {% block content %}{% endblock %}
         </div>
 
@@ -102,6 +114,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   burger.addEventListener('click', () => {
   document.querySelector('.site-header').classList.toggle('open');
+});
+
+});
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const burger = document.getElementById('search');
+
+  burger.addEventListener('click', () => {
+  document.querySelector('.search-form').classList.toggle('open');
 });
 
 });

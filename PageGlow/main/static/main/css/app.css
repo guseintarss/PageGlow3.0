@@ -159,11 +159,12 @@ a:hover{ text-decoration: underline; }
 .content{
   min-width: 0;
 }
-
-.post-content {
-    margin: 20px 0;
+.search-form{
+    display:none;
 }
-
+.search-form.open{
+    display:block;
+}
 .post-content blockquote {
     margin: 15px;
     padding-left: 20px;

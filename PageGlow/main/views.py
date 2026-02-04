@@ -2,6 +2,7 @@
 
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Q
 from django.views.generic.edit import FormMixin, DeleteView
 from requests import Response
 
@@ -166,4 +167,30 @@ class TagPostList(DataMixin, ListView):
         return self.get_mixin_context(context, title='Тег: ' + tag.tag)
 
     def get_queryset(self):
-        return Post.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('tags')
+        return Post.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')
+
+
+class Search(DataMixin, ListView):
+    template_name = 'main/index.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')  # Получаем поисковый запрос (пустая строка, если нет)
+
+        if query:
+            # Ищем совпадение в title ИЛИ в content (без учёта регистра)
+            search = Post.published.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query)
+            )
+        else:
+            # Если запроса нет — возвращаем все опубликованные посты
+            search = Post.published.all()
+
+        return search
+
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['q'] = self.request.GET.get('q')
+        return context

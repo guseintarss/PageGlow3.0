@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
+    path('search/', views.Search.as_view(), name='search'),
     path('login/', views.login, name='login'),
     path('addpage/', views.AddPage.as_view(), name='addpage'),
     path('post/<slug:post_slug>/', views.ShowPost.as_view(), name='post'),
