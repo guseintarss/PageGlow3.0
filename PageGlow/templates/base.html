@@ -27,6 +27,11 @@
         </nav>
 
         <div class="user-area">
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
+                    <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M22,20l-2,2l-6,-6v-2h2z"></path><path d="M9,16c-3.9,0 -7,-3.1 -7,-7c0,-3.9 3.1,-7 7,-7c3.9,0 7,3.1 7,7c0,3.9 -3.1,7 -7,7zM9,4c-2.8,0 -5,2.2 -5,5c0,2.8 2.2,5 5,5c2.8,0 5,-2.2 5,-5c0,-2.8 -2.2,-5 -5,-5z"></path><path transform="translate(-5.90254,14.24719) rotate(-44.992)" d="M13.7,12.5h1v3.5h-1z"></path></g></g>
+                </svg>
+            </a>
             {% if user.is_authenticated %}
                 <a class="user-profile" href="{% url 'users:profile' %}">{{ user.username }}</a>
                 {% if user.photo %}
@@ -67,10 +72,9 @@
     <nav class="footer-nav">
         <p>Ссылки</p>
       <ul>
-        <li><a href="/about">О нас</a></li>
-        <li><a href="/services">Услуги</a></li>
-        <li><a href="/portfolio">Портфолио</a></li>
-        <li><a href="/contact">Контакты</a></li>
+        {% for m in mainmenu %}
+           <li><a href="{% url m.url_name %}">{{ m.title }}</a></li>
+        {% endfor %}
       </ul>
     </nav>
 
