@@ -100,7 +100,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'djanglow',
         'USER': 'temirlan',
-        'PASSWORD': '47692581Qw',
+        'PASSWORD': config('password_bd'),
         'HOST': '195.133.145.235',
         'PORT': '5432',
     }
