@@ -65,7 +65,13 @@
         </div>
 
         <aside class="sidebar" aria-label="Боковая панель">
-            {% block sidebar %}{% endblock %}
+            {% block sidebar %}
+                <aside>
+                    {% block sidebar_content %}
+                        {% include 'main/includes/sidebar_new_posts.html' %}
+                    {% endblock %}
+                </aside>
+            {% endblock %}
             {% show_all_tags %}
         </aside>
     </div>
@@ -98,7 +104,7 @@
     <div class="footer-social">
       <a href="https://t.me/pageglow">Telegram</a>
       <a href="https://vk.com/pageglow">VK</a>
-      <a href="https://github.com/pageglow">GitHub</a>
+      <a href="https://github.com/guseintarss/PageGlow3.0/tree/master">GitHub</a>
     </div>
   </div>
     <hr>

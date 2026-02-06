@@ -3,6 +3,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.views.generic.edit import FormMixin, DeleteView
 from requests import Response
+from bs4 import BeautifulSoup
+
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -19,6 +21,7 @@ from PageGlow import settings
 from .forms import AddPostForm, UploadFileForm, CommentForm
 from .models import Post, Category, TagPost, UploadFiles
 from .utils import DataMixin
+
 
 
 
@@ -108,8 +111,21 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     title_page = 'Добавление статьи'
 
     def form_valid(self, form):
+        html_content = form.cleaned_data['content']
+        soup = BeautifulSoup(html_content, 'html.parser')
+        heading = soup.find(['h1'])
+
         w = form.save(commit=False)
         w.author = self.request.user
+
+        if heading:
+            form.instance.title = heading.get_text(strip=True)
+            heading.decompose()
+            form.instance.content = str(soup)
+        else:
+            form.instance.title = 'Без заголовка'
+
+
         return super().form_valid(form)
 
 class UpdatePage(DataMixin, UpdateView):
@@ -191,4 +207,11 @@ class Search(DataMixin, ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['q'] = self.request.GET.get('q')
+        return context
+
+
+class BaseView(View):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['new_posts'] = Post.objects.filter(status=Post.Status.PUBLISHED).order_by('-created_at')[:5]
         return context

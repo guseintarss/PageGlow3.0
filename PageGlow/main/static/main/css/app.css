@@ -160,6 +160,20 @@ a:hover{ text-decoration: underline; }
     display:block;
     padding:10px 0;
 }
+.span_published{
+    padding:5px;
+    background-color: green;
+    color:white;
+}
+.span_draft{
+    padding:5px;
+    background-color:orange;
+    color:black;
+}
+
+.n:hover{
+    text-decoration:none;
+}
 .site-header.open .top-nav{
     transform: translateX(100%)
 }
@@ -214,6 +228,19 @@ a:hover{ text-decoration: underline; }
     max-width:500px;
 }
 
+.sidebar-widget {
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.sidebar-widget ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-widget li {
+    margin-bottom: 5px;
+}
 .auth {
   margin-top:10px;
   background: white;

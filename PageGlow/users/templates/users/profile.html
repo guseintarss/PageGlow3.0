@@ -31,13 +31,23 @@
     <hr>
     <h4>Посты пользователя {{user.username}}</h4>
 </div>
-<nav>
-
-</nav>
-
+<article class="post">
+    <ul class="nav nav-underline">
+      <li class="nav-item">
+        <a class="nav-link n" aria-current="page" href="">Опубликованные</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link n" aria-current="page" href="#">Черновики</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link n" aria-current="page" href="#">Избранное</a>
+      </li>
+    </ul>
+</article>
     {% for p in posts %}
 <article class="post">
 
+   {% if p.is_published == True %}<p><span class="p-2 mb-2 bg-success text-white">Опубликовано</span></p>{% elif p.is_published == False %}<p><span class="p-2 mb-2 bg-warning text-dark">Черновик</span></p>{% endif %}
     <h2>{{ p.title }}</h2>
     <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}} {{p.author.username|default:'Неизвестно'}}</p>
     {% if p.photo %}

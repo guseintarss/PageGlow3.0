@@ -1,0 +1,14 @@
+<div class="sidebar-widget">
+    <h4>Недавно написанные статьи</h4>
+    <ul>
+        {% for post in posts %}
+            <hr>
+            <li>
+                <a class="new_posts" href="{% url 'post' post.slug %}">{{ post.title }}</a>
+                <small>{{ post.created_at|date:"d.m.Y" }}</small>
+            </li>
+
+        {% endfor %}
+    </ul>
+</div>
+<hr>

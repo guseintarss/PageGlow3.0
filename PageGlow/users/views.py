@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, CreateView, UpdateView, DeleteView
+from django.views.generic import FormView, CreateView, UpdateView, DeleteView, ListView
 from django.contrib import messages
 
 from rest_framework import viewsets, permissions
@@ -103,9 +103,16 @@ class EditProfileUser(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
+
 @login_required
 def profile_user(request):
     post_data = request.user.posts.select_related('author', 'cat').all()
+
+    if post_data == 'published':
+        return Post.objects.filter(is_published=True).order_by('-created')
+    elif post_data == 'drafts':
+        return Post.objects.filter(is_published=False).order_by('-created')
+
 
     extra_context = {
         'title': 'Профиль пользователя',
