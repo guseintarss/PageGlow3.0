@@ -26,9 +26,10 @@
 
         <nav class="top-nav" aria-label="Основное меню">
             <ul class="menu-list">
-            {% for m in mainmenu %}
-                <li><a class="menu_link" href="{% url m.url_name %}">{{ m.title }}</a></li>
-            {% endfor %}
+                {% show_categories %}
+<!--            {% for m in cats %}-->
+<!--                <li><a class="menu_link" href="{% url m.url_name %}">{{ m.title }}</a></li>-->
+<!--            {% endfor %}-->
             </ul>
         </nav>
 
@@ -65,7 +66,6 @@
 
         <aside class="sidebar" aria-label="Боковая панель">
             {% block sidebar %}{% endblock %}
-            {% show_categories %}
             {% show_all_tags %}
         </aside>
     </div>

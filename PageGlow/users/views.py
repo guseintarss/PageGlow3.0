@@ -53,7 +53,7 @@ def delete_user(request, user_id):
             }
             return render(request, 'users/delete_user.html', extra_context)
         try:
-            user.is_active = not user.is_active
+            user.is_active = False
             user.save()
             messages.success(request, f'Пользователь {user.username} успешно деактивирован.')
 

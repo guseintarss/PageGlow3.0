@@ -1,5 +1,3 @@
-
-
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q

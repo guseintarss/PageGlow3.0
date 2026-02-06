@@ -36,7 +36,7 @@ a:hover{ text-decoration: underline; }
     text-decoration:none;
 }
 .pg-container{
-  width: min(1100px, calc(100% - 32px));
+  width: min(1050px, calc(100% - 32px));
   margin-inline: auto;
 }
 
@@ -58,19 +58,19 @@ a:hover{ text-decoration: underline; }
 .header__burger-menu{
     display:none;
     position:relative;
-    width: 34px;
-    height:34px;
+    width: 30px;
+    height:30px;
     border: none;
     background-color: transparent;
     z-index:2;
 }
 .header__burger-menu span{
     position:absolute;
-    width:30px;
+    width:25px;
     height:3px;
     background-color:white;
     left: 2px;
-    transition: transform .5s, opacity .5s,  background-color .5s;
+    transition: transform .2s, opacity .2s;
 }
 .site-header.open .header__burger-menu span:nth-child(1){
     transform:translateY(0) rotate(-45deg);
@@ -82,10 +82,10 @@ a:hover{ text-decoration: underline; }
     transform:translateY(0) rotate(45deg);
 }
 .header__burger-menu span:nth-child(1){
-    transform: translateY(-8px);
+    transform: translateY(-7px);
 }
 .header__burger-menu span:nth-child(3){
-    transform: translateY(8px);
+    transform: translateY(7px);
 }
 .brand{
   font-weight: 700;
@@ -93,12 +93,6 @@ a:hover{ text-decoration: underline; }
   letter-spacing: 0.2px;
   white-space: nowrap;
   z-index: 2;
-}
-.top-nav{
-  display: flex;
-  gap: 6px;
-  flex: 1 1 auto;
-  flex-wrap: wrap;
 }
 .menu-list{
   display:flex;
@@ -144,6 +138,30 @@ a:hover{ text-decoration: underline; }
 .login-pill:hover{
   background: var(--primary-700);
   text-decoration: none;
+}
+.header__burger-menu{
+  display:block;
+}
+.top-nav{
+    position:absolute;
+    left: -250px;
+    top:0;
+    width:250px;
+    height: 400px;
+    background-color: #1c3e7e;
+    padding:55px 20px 20px 20px;
+    transition: transform .2s;
+}
+.menu-list{
+    display:block;
+}
+.menu_link{
+    font-size:21px;
+    display:block;
+    padding:10px 0;
+}
+.site-header.open .top-nav{
+    transform: translateX(100%)
 }
 
 /* Layout */
@@ -384,30 +402,6 @@ display:flex;
   .layout{ grid-template-columns: 1fr; }
   .sidebar{ position: static; }
   .user-area{justify-content: flex-end; }
-    .header__burger-menu{
-      display:block;
-    }
-    .top-nav{
-        position:absolute;
-        left: -250px;
-        top:0;
-        width:250px;
-        background-color: #1c3e7e;
-        padding:55px 20px 20px 20px;
-        transition: transform .2s;
-    }
-    .menu-list{
-        display:block;
-    }
-    .menu_link{
-        color:white;
-        font-size:21px;
-        display:block;
-        padding:10px 0;
-    }
-    .site-header.open .top-nav{
-        transform: translateX(100%)
-    }
 }
 
 @media (max-width: 520px){
