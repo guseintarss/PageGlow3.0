@@ -4,8 +4,13 @@ from django.db.models import Q
 from django.views.generic.edit import FormMixin, DeleteView
 from requests import Response
 from bs4 import BeautifulSoup
+from django.shortcuts import render
 
-
+from rest_framework.generics import ListAPIView
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import viewsets, permissions
+import math
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.uploadedfile import UploadedFile
@@ -18,10 +23,48 @@ from django.views.generic import TemplateView, ListView, DetailView, FormView, C
 from django.contrib import messages
 
 from PageGlow import settings
+from main.serializers import PostSerializer
 from .forms import AddPostForm, UploadFileForm, CommentForm
 from .models import Post, Category, TagPost, UploadFiles
 from .utils import DataMixin
 
+# class ProjectViewset(viewsets.ViewSet):
+#     permission_classes = [permissions.AllowAny]
+#     queryset = Post.objects.all()
+#     serializer_class = PostSerializer
+
+
+#     def list(self, request):
+#         queryset = self.queryset
+#         serializer = self.serializer_class(queryset, many=True)
+#         return Response(serializer.data)
+
+#     def create(self, request):
+#         serializer = self.serializer_class(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors, status=400)
+        
+#     def retrive(self, request, pk=None):
+#         post = self.queryset.get(pk=pk)
+#         serializer = self.serializer_class(post)
+#         return Response(serializer.data)
+
+#     def update(self, request, pk=None):
+#         post = self.queryset.get(pk=pk)
+#         serializer = self.serializer_class(post, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors, status=400)       
+
+#     def destro(self, request, pk=None):
+#         post = self.queryset.get(pk=pk)
+#         post.delete()
+#         return Response(status=204)
 
 
 
@@ -39,6 +82,9 @@ class MainHome(DataMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         return context
+
+def react_app(request):
+    return render(request, 'home')
 
 # class CustomSuccessMessageMixin:
 #     @property
@@ -166,6 +212,10 @@ class MainCategory(DataMixin, ListView):
         cat = context["posts"][0].cat
         return self.get_mixin_context(context, title='Категория - ' + cat.name, cat_selected=cat.pk)
 
+
+class MyModelList(ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
 
 def page_not_found(request, exception):
     return render(request, '404.html', status=404)
