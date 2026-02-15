@@ -2,7 +2,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from PageGlow import settings
-from main.views import page_not_found
+# from main.views import page_not_found
 
 from rest_framework.routers import DefaultRouter
 from users.views import RuleViewSet
@@ -24,7 +24,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-handler404 = page_not_found
+# handler404 = page_not_found
 
 admin.site.site_header = 'Панель администрирования'
 
