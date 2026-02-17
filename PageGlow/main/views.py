@@ -119,7 +119,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     def form_valid(self, form):
         html_content = form.cleaned_data['content']
         soup = BeautifulSoup(html_content, 'html.parser')
-        heading = soup.find(['h1'])
+        heading = soup.find(['h1', 'h2', 'h3'])
 
         w = form.save(commit=False)
         w.author = self.request.user
@@ -134,7 +134,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
         return super().form_valid(form)
 
-class UpdatePage(DataMixin, UpdateView):
+class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'photo', 'is_published', 'cat']
     template_name = 'main/addpage.html'
