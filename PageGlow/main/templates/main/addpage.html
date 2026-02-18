@@ -29,6 +29,38 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+ClassicEditor
+  .create(document.querySelector('#editor'))
+  .catch(error => {
+    console.error(error);
+  });
+
+
+function toggleCKEditorTheme() {
+  const editorElement = document.querySelector('.ck');
+  
+  if (editorElement) {
+    if (document.documentElement.classList.contains('dark-mode')) {
+      editorElement.classList.add('dark-mode');
+    } else {
+      editorElement.classList.remove('dark-mode');
+    }
+  }
+}
+
+// Добавляем обработчик для изменения системной темы
+window.matchMedia('(prefers-color-scheme: dark)')
+  .addEventListener('change', toggleCKEditorTheme);
+
+// Вызываем при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+  toggleCKEditorTheme();
+});
+
+</script>
 <script src="https://cdn.ckeditor.com/ckeditor5/34.0.1/classic/ckeditor.js"></script>
 {{ form.media }}
 {% endblock %}

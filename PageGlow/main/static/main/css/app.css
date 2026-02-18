@@ -13,16 +13,106 @@
   --radius: 12px;
 
   /* Dark (Obsidian-like) */
-  --dark-bg: #0f1115;
+  --dark-bg: #191a1b;
   --dark-bg-header: #252525;
-  --dark-surface: #14171d;
+  --dark-surface: #222325;
   --dark-text: #ffffff;
   --dark-muted: #8892b0;
-  --dark-border: #343a40;
+  --dark-border: #2a2f33;
   --dark-primary: #115e99;
   --dark-primary-700: #0b4c81;
   --dark-shadow: 0 2px 10px rgba(255,255,255,0.1);
+
+  --ck-color-base-background: var(--obs-surface); /* фон редактора */
+  --ck-color-text: var(--obs-text); /* цвет текста */
+  --ck-color-border: var(--obs-border); /* цвет границ */
+  
+  /* Цвета кнопок */
+  --ck-color-button-default-background: var(--obs-surface);
+  --ck-color-button-default-hover-background: rgba(255,255,255,0.1);
+  --ck-color-button-default-active-background: rgba(255,255,255,0.08);
+  
+  --ck-color-button-action-background: var(--primary);
+  --ck-color-button-action-hover-background: var(--primary-700);
+  
+  /* Тени и эффекты */
+  --ck-color-shadow-drop: rgba(255,255,255,0.1);
+  --ck-color-shadow-inner: rgba(255,255,255,0.05);
+  
+  /* Цвета для ввода */
+  --ck-color-input-background: var(--obs-surface);
+  --ck-color-input-border: var(--obs-border);
+  --ck-color-input-text: var(--obs-text);
 }
+/* Базовые стили для CKEditor */
+.ck {
+  --ck-color-base-background: var(--obs-surface);
+  --ck-color-text: var(--obs-text);
+  --ck-color-border: var(--obs-border);
+}
+/* Стили для панели инструментов */
+.ck.ck-editor__main {
+  background: var(--obs-surface);
+  border-color: var(--obs-border);
+}
+
+.ck.ck-editor__main .ck-toolbar {
+  background: var(--obs-surface);
+  border-bottom: 1px solid var(--obs-border);
+}
+
+.ck.ck-editor__main .ck-button {
+  color: var(--obs-text);
+  background: var(--obs-surface);
+}
+
+.ck.ck-editor__main .ck-button:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.ck.ck-editor__main .ck-button:focus {
+  outline: 2px solid var(--primary);
+}
+
+/* Активное состояние кнопок */
+.ck.ck-editor__main .ck-button_is_active {
+  background: var(--primary);
+  color: var(--obs-surface);
+}
+
+/* Стили для редактора контента */
+.ck-content {
+  color: var(--obs-text);
+  background: var(--obs-surface);
+}
+
+.ck-content a {
+  color: var(--primary);
+}
+
+/* Стили для модальных окон */
+.ck-dialog {
+  background: var(--obs-surface);
+  color: var(--obs-text);
+  border: 1px solid var(--obs-border);
+}
+
+/* Стили для всплывающих подсказок */
+.ck-bubble {
+  background: var(--obs-surface);
+  color: var(--obs-text);
+  border: 1px solid var(--obs-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ck {
+    --ck-color-base-background: var(--obs-surface);
+    --ck-color-text: var(--obs-text);
+    --ck-color-button-background: var(--obs-surface);
+    --ck-color-button-hover-background: rgba(255,255,255,0.1);
+  }
+}
+
 .dark-mode {
   --bg: var(--dark-bg);
   --bg-header: var(--dark-bg-header);
@@ -35,12 +125,11 @@
   --shadow: var(--dark-shadow);
 }
 .theme-toggle {
-  position: fixed;
-  top: 20px;
-  right: 250px;
+  position:relative;
   background: transparent;
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
+  border: none;
   cursor: pointer;
 }
 
