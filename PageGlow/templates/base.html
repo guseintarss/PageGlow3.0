@@ -23,13 +23,10 @@
             <span></span><span></span><span></span>
         </button>
         <a class="brand" href="{% url 'home' %}">PageGlow</a>
-
+        
         <nav class="top-nav" aria-label="Основное меню">
             <ul class="menu-list">
                 {% show_categories %}
-<!--            {% for m in cats %}-->
-<!--                <li><a class="menu_link" href="{% url m.url_name %}">{{ m.title }}</a></li>-->
-<!--            {% endfor %}-->
             </ul>
         </nav>
 
