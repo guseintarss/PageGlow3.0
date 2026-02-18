@@ -89,6 +89,7 @@ TEMPLATES = [
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'main', 'static')]
 
+
 WSGI_APPLICATION = 'PageGlow.wsgi.application'
 
 
@@ -155,7 +156,8 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / '/var/www/pageglow/PageGlow3.0/PageGlow/staticfiles/'
 
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -215,7 +217,7 @@ customColorPalette = [
     ]
 
 # CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
-# CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] # optional
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] 
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
@@ -230,7 +232,13 @@ CKEDITOR_5_CONFIGS = {
         'toolbar': {
             'items': ['heading', '|', 'bold', 'italic', 'link',
                       'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
-                    }
+        },
+        'image': {
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignRight', 'imageStyle:alignCenter', '|'],
+        },
+        'simpleUpload': {
+            'uploadUrl': '/ckeditor5/image_upload/', 
+        },
     },
     'code_mode': {
         'toolbar': ['codeBlock', '|', 'undo', 'redo'],

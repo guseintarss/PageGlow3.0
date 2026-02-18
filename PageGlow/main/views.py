@@ -88,7 +88,7 @@ class ShowPost(FormMixin, DataMixin, DetailView):
         allowed_tags = [
             'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
             'ul', 'ol', 'li', 'strong', 'em', 'a', 'img',
-            'blockquote', 'code', 'pre', 'i', 'span',
+            'blockquote', 'code', 'pre', 'i', 'span', 'u', 'br', 'figure',
         ]
 
         post.content = clean(post.content, tags=allowed_tags)
