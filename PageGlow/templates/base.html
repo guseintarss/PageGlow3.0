@@ -2,7 +2,7 @@
 {% load glow_tags %}
 
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,6 +29,10 @@
                 {% show_categories %}
             </ul>
         </nav>
+
+        <button id="theme-toggle" class="theme-toggle">
+            <i class="sun-icon"></i>
+        </button>
 
         <div class="user-area">
             <a id="search" href="#">
@@ -110,7 +114,40 @@
     </div>
 </footer>
 {% block extra_js %}{% endblock %}
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const toggleButton = document.getElementById('theme-toggle');
+    const body = document.body;
+    const htmlElement = document.documentElement;
+
+    // Проверяем сохранённую тему
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        htmlElement.setAttribute('data-bs-theme', 'dark');
+        toggleButton.setAttribute('data-bs-theme', 'dark');
+    }
+
+    toggleButton.addEventListener('click', () => {
+     body.classList.toggle('dark-mode');
+     if (htmlElement.hasAttribute('data-bs-theme')) {
+      // Удаляем атрибуты при переключении на светлую тему
+      htmlElement.removeAttribute('data-bs-theme');
+      toggleButton.removeAttribute('data-bs-theme');
+      localStorage.removeItem('theme');
+      
+    } else {
+      // Добавляем атрибуты при переключении на темную тему
+      htmlElement.setAttribute('data-bs-theme', 'dark');
+      toggleButton.setAttribute('data-bs-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : '');
+    }
+     
+    });
+});
+
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
   const burger = document.getElementById('burger');
   const menu = document.getElementById('menu');
@@ -124,14 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-  const burger = document.getElementById('search');
+    const burger = document.getElementById('search');
 
-  burger.addEventListener('click', () => {
-  document.querySelector('.search-form').classList.toggle('open');
+    burger.addEventListener('click', () => {
+    document.querySelector('.search-form').classList.toggle('open');
+    });
 });
-
-});
-
 </script>
 </body>
 </html>

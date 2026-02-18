@@ -40,21 +40,21 @@ class RegisterUserForm(UserCreationForm):
 
 class ProfileUserForm(forms.ModelForm):
     username = forms.CharField(disabled=True,label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.CharField(disabled=True,label='E-mail', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    this_year = datetime.date.today().year
-    date_birth = forms.DateField( label='Дата рождения' ,widget=forms.SelectDateWidget(years=range(this_year-50, this_year+1)))
+    email = forms.CharField(disabled=True,label='E-mail', widget=forms.EmailInput(attrs={'class': 'form-control', 'id': 'floatingInputDisabled', 'placeholder': 'name@example.com', 'value': 'mdo@example.com',}))
+    # this_year = datetime.date.today().year
+    # date_birth = forms.DateField( label='Дата рождения' ,widget=forms.SelectDateWidget(years=range(this_year-50, this_year+1)))
 
     class Meta:
         model = get_user_model()
-        fields = ['photo', 'username', 'email', 'date_birth', 'first_name', 'last_name']
+        fields = ['photo', 'username', 'email', 'first_name', 'last_name']
         labels = {
             'first_name': 'Имя',
             'last_name': 'Фамилия',
         }
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'date_birth': forms.DateInput(attrs={'class': 'form-select form-select-lg mb-3'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
+            # 'date_birth': forms.DateInput(attrs={'class': 'form-input'}),
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
