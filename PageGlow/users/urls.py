@@ -3,6 +3,8 @@ from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordCh
 from django.urls import path, reverse_lazy, include
 
 from rest_framework.routers import DefaultRouter
+
+from main.views import PostDeleteView
 # from main.views import PostDeleteView
 from . import views
 from .views import EditProfileUser, RuleViewSet
@@ -18,7 +20,7 @@ urlpatterns = [
     path('user/<int:user_id>/toggle-active/', views.delete_user, name='delete_user'),
     path('', include(router.urls)),
     path('profile/', views.profile_user, name='profile'),
-    # path('articles/<slug:slug>/delete/', PostDeleteView.as_view(), name='article-delete'),
+    path('articles/<slug:slug>/delete/', PostDeleteView.as_view(), name='article-delete'),
     path('edit_profile/', views.EditProfileUser.as_view(), name='edit_profile'),
 
     path('password_reset/', PasswordResetView.as_view(template_name='users/password_reset_form.html',
