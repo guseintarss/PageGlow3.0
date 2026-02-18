@@ -3,7 +3,9 @@ from django.contrib.auth.views import LogoutView, PasswordChangeView, PasswordCh
 from django.urls import path, reverse_lazy, include
 
 from rest_framework.routers import DefaultRouter
+
 from main.views import PostDeleteView
+# from main.views import PostDeleteView
 from . import views
 from .views import EditProfileUser, RuleViewSet
 

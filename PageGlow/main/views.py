@@ -1,11 +1,17 @@
+from venv import logger
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.views.generic.edit import FormMixin, DeleteView
 from requests import Response
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, FeatureNotFound
+from django.shortcuts import render
 
-
+from rest_framework.generics import ListAPIView
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import viewsets, permissions
+import math
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.uploadedfile import UploadedFile
@@ -18,6 +24,7 @@ from django.views.generic import TemplateView, ListView, DetailView, FormView, C
 from django.contrib import messages
 
 from PageGlow import settings
+from main.serializers import PostSerializer
 from .forms import AddPostForm, UploadFileForm, CommentForm
 from .models import Post, Category, TagPost, UploadFiles
 from .utils import DataMixin
@@ -113,7 +120,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     def form_valid(self, form):
         html_content = form.cleaned_data['content']
         soup = BeautifulSoup(html_content, 'html.parser')
-        heading = soup.find(['h1'])
+        heading = soup.find(['h1', 'h2', 'h3'])
 
         w = form.save(commit=False)
         w.author = self.request.user
@@ -125,10 +132,9 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
         else:
             form.instance.title = 'Без заголовка'
 
-
         return super().form_valid(form)
-
-class UpdatePage(DataMixin, UpdateView):
+    
+class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
     model = Post
     fields = ['title', 'content', 'photo', 'is_published', 'cat']
     template_name = 'main/addpage.html'
@@ -166,6 +172,10 @@ class MainCategory(DataMixin, ListView):
         cat = context["posts"][0].cat
         return self.get_mixin_context(context, title='Категория - ' + cat.name, cat_selected=cat.pk)
 
+
+# class MyModelList(ListAPIView):
+#     queryset = Post.objects.all()
+#     serializer_class = PostSerializer
 
 def page_not_found(request, exception):
     return render(request, '404.html', status=404)
@@ -210,8 +220,3 @@ class Search(DataMixin, ListView):
         return context
 
 
-class BaseView(View):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['new_posts'] = Post.objects.filter(status=Post.Status.PUBLISHED).order_by('-created_at')[:5]
-        return context
