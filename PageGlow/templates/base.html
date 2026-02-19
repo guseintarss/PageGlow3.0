@@ -23,14 +23,11 @@
             <span></span><span></span><span></span>
         </button>
         <a class="brand" href="{% url 'home' %}">PageGlow</a>
-        
         <nav class="top-nav" aria-label="Основное меню">
             <ul class="menu-list">
                 {% show_categories %}
             </ul>
         </nav>
-
-        
 
         <div class="user-area">
             <button id="theme-toggle" class="theme-toggle">
@@ -115,6 +112,7 @@
     </div>
 </footer>
 {% block extra_js %}{% endblock %}
+<script src="https://cdn.ckeditor.com/ckeditor5/32.1.0/classic/ckeditor.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
     const toggleButton = document.getElementById('theme-toggle');
@@ -152,12 +150,35 @@
 document.addEventListener('DOMContentLoaded', () => {
   const burger = document.getElementById('burger');
   const menu = document.getElementById('menu');
+  const siteHeader = document.querySelector('.site-header'); // Сохраняем для удобства
 
+  // Функция для закрытия меню
+  function closeMenu() {
+    siteHeader.classList.remove('open');
+  }
+
+  // Обработчик клика на бургер — toggles меню
   burger.addEventListener('click', () => {
-  document.querySelector('.site-header').classList.toggle('open');
+    siteHeader.classList.toggle('open');
+  });
+
+  // Обработчик клика по всему документу
+  document.addEventListener('click', (event) => {
+    // Проверяем, не был ли клик внутри меню или на бургере
+    if (!siteHeader.classList.contains('open')) {
+      return; // Меню уже закрыто — ничего не делаем
+    }
+
+    const isClickInsideMenuOrBurger = 
+      siteHeader.contains(event.target) || 
+      burger.contains(event.target);
+
+    if (!isClickInsideMenuOrBurger) {
+      closeMenu(); // Закрываем меню, если клик вне него
+    }
+  });
 });
 
-});
 
 </script>
 <script>

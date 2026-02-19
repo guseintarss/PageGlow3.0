@@ -136,10 +136,11 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     
 class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'photo', 'is_published', 'cat']
+    form_class = AddPostForm
     template_name = 'main/addpage.html'
     success_url = reverse_lazy('home')
     title_page = 'Редактирование статьи'
+    
 
     def get_success_url(self, **kwargs):
         return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
@@ -164,13 +165,18 @@ class MainCategory(DataMixin, ListView):
     context_object_name = 'posts'
     allow_empty = False
 
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.category = get_object_or_404(MainCategory, slug=self.kwargs['cat_slug'])
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
-        return Post.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
+        return Post.published.filter(cat=self.category).select_related('cat')
 
     def get_context_data(self, **kwargs):
+        cat = get_object_or_404(MainCategory, slug=self.kwargs['cat_slug'])
         context = super().get_context_data(**kwargs)
-        cat = context["posts"][0].cat
-        return self.get_mixin_context(context, title='Категория - ' + cat.name, cat_selected=cat.pk)
+        return self.get_mixin_context(context, title='Категория - ' + self.category.name, cat_selected=self.category.pk)
 
 
 # class MyModelList(ListAPIView):

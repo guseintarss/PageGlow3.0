@@ -30,6 +30,15 @@
 
 {% block extra_js %}
 <script>
+  ClassicEditor
+  .create(document.querySelector('#your-textarea-id'), {
+    // настройки
+  })
+  .catch(error => {
+    console.error(error); // проверьте консоль на ошибки
+  });
+</script>
+<script>
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 ClassicEditor
