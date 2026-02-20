@@ -240,7 +240,7 @@ CKEDITOR_5_CONFIGS = {
         'simpleUpload': {
             'uploadUrl': '/ckeditor5/image_upload/', 
         },
-        
+        'placeholder': 'Заголовок'
     },
     'code_mode': {
         'toolbar': ['codeBlock', '|', 'undo', 'redo'],

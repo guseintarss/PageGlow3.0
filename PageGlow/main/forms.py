@@ -28,7 +28,7 @@ class AddPostForm(forms.ModelForm):
         widgets = {
             'photo': forms.ClearableFileInput(attrs={'class':'form-control'}),
             'tags': forms.SelectMultiple(attrs={'class':'form-control'}),
-            'is_published': forms.CheckboxInput(attrs={'class':'form-checkbox'})
+            'is_published': forms.Select(attrs={'class':'form-control'}),
         }
 
     def clean_content(self):
