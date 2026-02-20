@@ -46,16 +46,17 @@ class ProfileUserForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ['photo', 'username', 'email', 'first_name', 'last_name']
+        fields = ['photo', 'username', 'email', 'first_name', 'last_name', 'about_me']
         labels = {
             'first_name': 'Имя',
             'last_name': 'Фамилия',
         }
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-input'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'type':'text'}),
             # 'date_birth': forms.DateInput(attrs={'class': 'form-input'}),
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
+            'about_me': forms.TextInput(attrs={'class':'form-control', 'id':'exampleFormControlInput1'})
         }
 
 

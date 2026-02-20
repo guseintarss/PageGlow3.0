@@ -146,7 +146,7 @@
 }
 *{ box-sizing: border-box; 
 transition: all 0.2s ease;}
-html, body{ height: 100%; }
+html, body{ height: 100%; overflow-x: hidden; }
 body{
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -164,11 +164,13 @@ a:hover{ text-decoration: underline; }
 .pg-container{
   width: min(1050px, calc(100% - 32px));
   margin-inline: auto;
+  
 }
 
 /* Header */
 .site-header{
   position: sticky;
+  width: 100%;
   top: 0;
   z-index: 1000;
   background: var(--bg-header);
@@ -444,6 +446,7 @@ a:hover{ text-decoration: underline; }
   font-weight: 600;
   margin-bottom: 6px;
 }
+/*
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -454,8 +457,9 @@ select{
   border: 2px solid var(--border);
   border-radius: 10px;
   font-size: 1rem;
-  background: #fff;
+  background: var(--bg);
 }
+  */
 textarea{ min-height: 160px; resize: vertical; }
 input:focus, textarea:focus, select:focus{
   outline: none;
@@ -485,8 +489,8 @@ input:focus, textarea:focus, select:focus{
 /* Floating add button */
 .addbutton{
   position: fixed;
-  right: 18px;
-  bottom: 18px;
+  right: 45px;
+  bottom: 30px;
   width: 56px;
   height: 56px;
   display: grid;
