@@ -164,9 +164,7 @@ a:hover{ text-decoration: underline; }
 .pg-container{
   width: min(1050px, calc(100% - 32px));
   margin-inline: auto;
-  
 }
-
 /* Header */
 .site-header{
   position: sticky;
@@ -376,11 +374,11 @@ a:hover{ text-decoration: underline; }
 }
 .auth {
   margin-top:10px;
-  background: white;
+  background: var(--surface);
   padding: 25px;
   margin-bottom: 25px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
   transition: transform 0.2s;
 }
 /* Cards / posts */
