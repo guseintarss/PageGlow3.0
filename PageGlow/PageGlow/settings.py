@@ -218,6 +218,7 @@ customColorPalette = [
 
 # CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
 CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] 
+
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
@@ -239,6 +240,7 @@ CKEDITOR_5_CONFIGS = {
         'simpleUpload': {
             'uploadUrl': '/ckeditor5/image_upload/', 
         },
+        
     },
     'code_mode': {
         'toolbar': ['codeBlock', '|', 'undo', 'redo'],

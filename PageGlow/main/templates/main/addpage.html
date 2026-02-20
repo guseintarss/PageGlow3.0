@@ -30,6 +30,25 @@
 
 {% block extra_js %}
 <script>
+</script>
+<script>
+  ClassicEditor
+    .create(document.querySelector('#id_content'))
+    .then(editor => {
+        editor.model.change(writer => {
+            const paragraph = editor.model.document.getRoot().firstChild;
+            if (paragraph && paragraph.name === 'paragraph') {
+                // Преобразуем первый абзац в заголовок (например, H2)
+                writer.setElementAttribute(paragraph, 'heading', 'heading2');
+            }
+        });
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+</script>
+<script>
   ClassicEditor
   .create(document.querySelector('#your-textarea-id'), {
     // настройки

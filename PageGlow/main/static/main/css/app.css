@@ -144,7 +144,6 @@
   border: none;
   cursor: pointer;
 }
-
 *{ box-sizing: border-box; 
 transition: all 0.2s ease;}
 html, body{ height: 100%; }
@@ -527,6 +526,8 @@ display:flex;
 }
 .comments{
     margin-right:5px;
+    color: var(--text);
+    background-color: var(--text);
 }
 /* Icons/links inside post cards */
 .delete-post{

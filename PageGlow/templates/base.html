@@ -2,7 +2,7 @@
 {% load glow_tags %}
 
 <!DOCTYPE html>
-<html lang="ru" >
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,6 +15,14 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}" />
     <meta name="apple-mobile-web-app-title" content="MyWebSite" />
     <link rel="manifest" href="{% static 'images/site.webmanifest' %}" />
+    <script>
+        // Устанавливаем тему сразу, до загрузки остального JS
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
 </head>
 <body class="{% block body_class %}{% endblock %}">
 <header class="site-header">
@@ -114,35 +122,41 @@
 {% block extra_js %}{% endblock %}
 <script src="https://cdn.ckeditor.com/ckeditor5/32.1.0/classic/ckeditor.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const toggleButton = document.getElementById('theme-toggle');
     const body = document.body;
     const htmlElement = document.documentElement;
 
-    // Проверяем сохранённую тему
-    if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-mode');
-        htmlElement.setAttribute('data-bs-theme', 'dark');
-        toggleButton.setAttribute('data-bs-theme', 'dark');
+    // Функция для установки темы
+    function setTheme(isDark) {
+        if (isDark) {
+            body.classList.add('dark-mode');
+            htmlElement.setAttribute('data-bs-theme', 'dark');
+            if (toggleButton) {
+                toggleButton.setAttribute('data-bs-theme', 'dark');
+            }
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            htmlElement.removeAttribute('data-bs-theme');
+            if (toggleButton) {
+                toggleButton.removeAttribute('data-bs-theme');
+            }
+            localStorage.removeItem('theme');
+        }
     }
 
-    toggleButton.addEventListener('click', () => {
-     body.classList.toggle('dark-mode');
-     if (htmlElement.hasAttribute('data-bs-theme')) {
-      // Удаляем атрибуты при переключении на светлую тему
-      htmlElement.removeAttribute('data-bs-theme');
-      toggleButton.removeAttribute('data-bs-theme');
-      localStorage.removeItem('theme');
-      
-    } else {
-      // Добавляем атрибуты при переключении на темную тему
-      htmlElement.setAttribute('data-bs-theme', 'dark');
-      toggleButton.setAttribute('data-bs-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : '');
+    // Применяем тему ДО того, как страница станет видимой пользователю
+    const savedTheme = localStorage.getItem('theme') === 'dark';
+    setTheme(savedTheme);
+
+    // Обработчик клика для переключения темы
+    if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+            const isCurrentlyDark = body.classList.contains('dark-mode');
+            setTheme(!isCurrentlyDark);
+        });
     }
-     
-    });
 });
 
 </script>
