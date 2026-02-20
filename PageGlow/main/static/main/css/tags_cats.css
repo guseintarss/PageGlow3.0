@@ -1,0 +1,33 @@
+/* Tags / categories */
+.cat-list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cat-selected .cat{
+  background: var(--bg);
+  color: var(--text);
+  cursor: default;
+  text-decoration: none;
+}
+.tags-list{ list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.tag{
+  padding: 6px 12px;
+  background: #eef2ff;
+  color: #3730a3;
+  border-radius: 999px;
+  border: 1px solid rgba(55,48,163,0.15);
+  font-size: 0.9rem;
+}
+.tag:hover{ text-decoration: none; filter: brightness(0.98); }
+.t-title{ font-weight: 700; margin-top: 18px; }
+.com-t{
+display:flex;
+}
+.comments{
+    margin-right:5px;
+    color: var(--text);
+    background-color: var(--text);
+}
