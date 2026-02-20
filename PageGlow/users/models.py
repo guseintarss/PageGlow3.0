@@ -7,6 +7,7 @@ class User(AbstractUser):
     photo = models.ImageField(upload_to='users/%Y/%m/%d/', null=True, blank=True, verbose_name='Фотография')
     data_birth = models.DateTimeField(null=True, blank=True, verbose_name='Дата рождения')
     phone_namber = models.CharField(max_length=11, null=True, blank=True, verbose_name='Номер телефона' )
+    about_me = models.TextField(max_length=255, null=True, blank=True, verbose_name='О себе')
 
 class Rule(models.Model):
     key = models.CharField(max_length=100, unique=True)

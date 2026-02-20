@@ -14,7 +14,8 @@ class AddPostForm(forms.ModelForm):
     )
     content = forms.CharField(
         label='Статья',
-        widget=CKEditor5Widget(config_name='default')
+        widget=CKEditor5Widget(config_name='default'),
+        initial='<h1></h1>'
     )
 
     def __init__(self, *args, **kwargs):
@@ -23,10 +24,11 @@ class AddPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['content', 'is_published', 'cat', 'tags']
+        fields = [ 'content', 'is_published', 'cat', 'tags']
         widgets = {
             'photo': forms.ClearableFileInput(attrs={'class':'form-control'}),
             'tags': forms.SelectMultiple(attrs={'class':'form-control'}),
+            'is_published': forms.Select(attrs={'class':'form-control'}),
         }
 
     def clean_content(self):

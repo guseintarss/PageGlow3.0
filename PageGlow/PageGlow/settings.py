@@ -27,9 +27,9 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBAG')
 
-ALLOWED_HOSTS = ["pageglow.ru", "www.pageglow.ru"]
+ALLOWED_HOSTS = ["pageglow.ru", "www.pageglow.ru", '127.0.0.1']
 
-# INTERNAL_IPS = ["127.0.0.1"]
+INTERNAL_IPS = ["127.0.0.1"]
 
 # CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
@@ -52,7 +52,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -88,7 +87,8 @@ TEMPLATES = [
     },
 ]
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend', 'build', 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'main', 'static')]
+
 
 WSGI_APPLICATION = 'PageGlow.wsgi.application'
 
@@ -154,7 +154,10 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / '/var/www/pageglow/PageGlow3.0/PageGlow/staticfiles/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -214,7 +217,8 @@ customColorPalette = [
     ]
 
 # CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
-# CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] # optional
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] 
+
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
@@ -229,7 +233,14 @@ CKEDITOR_5_CONFIGS = {
         'toolbar': {
             'items': ['heading', '|', 'bold', 'italic', 'link',
                       'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
-                    }
+        },
+        'image': {
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignRight', 'imageStyle:alignCenter', '|'],
+        },
+        'simpleUpload': {
+            'uploadUrl': '/ckeditor5/image_upload/', 
+        },
+        'placeholder': 'Заголовок'
     },
     'code_mode': {
         'toolbar': ['codeBlock', '|', 'undo', 'redo'],

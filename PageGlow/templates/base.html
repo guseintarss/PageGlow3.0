@@ -9,12 +9,25 @@
     <title>{{ title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link type="text/css" href="{% static 'main/css/app.css' %}" rel="stylesheet"/>
+    <link type="text/css" href="{% static 'main/css/forms.css' %}" rel="stylesheet"/>
+    <link type="text/css" href="{% static 'main/css/footer.css' %}" rel="stylesheet"/>
+    <link type="text/css" href="{% static 'main/css/tags_cats.css' %}" rel="stylesheet"/>
+    <link type="text/css" href="{% static 'main/css/posts.css' %}" rel="stylesheet"/>
+    <link type="text/css" href="{% static 'main/css/layouts.css' %}" rel="stylesheet"/>
     <link rel="icon" type="image/png" href="{% static 'images/favicon-96x96.png' %}" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" />
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}" />
     <meta name="apple-mobile-web-app-title" content="MyWebSite" />
     <link rel="manifest" href="{% static 'images/site.webmanifest' %}" />
+    <script>
+        // Устанавливаем тему сразу, до загрузки остального JS
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
 </head>
 <body class="{% block body_class %}{% endblock %}">
 <header class="site-header">
@@ -23,7 +36,6 @@
             <span></span><span></span><span></span>
         </button>
         <a class="brand" href="{% url 'home' %}">PageGlow</a>
-        
         <nav class="top-nav" aria-label="Основное меню">
             <ul class="menu-list">
                 {% show_categories %}
@@ -31,6 +43,9 @@
         </nav>
 
         <div class="user-area">
+            <button id="theme-toggle" class="theme-toggle">
+                <img width="48" height="48" src="https://img.icons8.com/fluency-systems-filled/48/FFFFFF/color-dropper.png" alt="color-dropper"/>
+            </button>
             <a id="search" href="#">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
                     <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M22,20l-2,2l-6,-6v-2h2z"></path><path d="M9,16c-3.9,0 -7,-3.1 -7,-7c0,-3.9 3.1,-7 7,-7c3.9,0 7,3.1 7,7c0,3.9 -3.1,7 -7,7zM9,4c-2.8,0 -5,2.2 -5,5c0,2.8 2.2,5 5,5c2.8,0 5,-2.2 5,-5c0,-2.8 -2.2,-5 -5,-5z"></path><path transform="translate(-5.90254,14.24719) rotate(-44.992)" d="M13.7,12.5h1v3.5h-1z"></path></g></g>
@@ -110,28 +125,89 @@
     </div>
 </footer>
 {% block extra_js %}{% endblock %}
-    <script>
+<script src="https://cdn.ckeditor.com/ckeditor5/32.1.0/classic/ckeditor.js"></script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
-  const burger = document.getElementById('burger');
-  const menu = document.getElementById('menu');
+    const toggleButton = document.getElementById('theme-toggle');
+    const body = document.body;
+    const htmlElement = document.documentElement;
 
-  burger.addEventListener('click', () => {
-  document.querySelector('.site-header').classList.toggle('open');
-});
+    // Функция для установки темы
+    function setTheme(isDark) {
+        if (isDark) {
+            body.classList.add('dark-mode');
+            htmlElement.setAttribute('data-bs-theme', 'dark');
+            if (toggleButton) {
+                toggleButton.setAttribute('data-bs-theme', 'dark');
+            }
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            htmlElement.removeAttribute('data-bs-theme');
+            if (toggleButton) {
+                toggleButton.removeAttribute('data-bs-theme');
+            }
+            localStorage.removeItem('theme');
+        }
+    }
 
+    // Применяем тему ДО того, как страница станет видимой пользователю
+    const savedTheme = localStorage.getItem('theme') === 'dark';
+    setTheme(savedTheme);
+
+    // Обработчик клика для переключения темы
+    if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+            const isCurrentlyDark = body.classList.contains('dark-mode');
+            setTheme(!isCurrentlyDark);
+        });
+    }
 });
 
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-  const burger = document.getElementById('search');
+document.addEventListener('DOMContentLoaded', () => {
+  const burger = document.getElementById('burger');
+  const menu = document.getElementById('menu');
+  const siteHeader = document.querySelector('.site-header'); // Сохраняем для удобства
 
+  // Функция для закрытия меню
+  function closeMenu() {
+    siteHeader.classList.remove('open');
+  }
+
+  // Обработчик клика на бургер — toggles меню
   burger.addEventListener('click', () => {
-  document.querySelector('.search-form').classList.toggle('open');
+    siteHeader.classList.toggle('open');
+  });
+
+  // Обработчик клика по всему документу
+  document.addEventListener('click', (event) => {
+    // Проверяем, не был ли клик внутри меню или на бургере
+    if (!siteHeader.classList.contains('open')) {
+      return; // Меню уже закрыто — ничего не делаем
+    }
+
+    const isClickInsideMenuOrBurger = 
+      siteHeader.contains(event.target) || 
+      burger.contains(event.target);
+
+    if (!isClickInsideMenuOrBurger) {
+      closeMenu(); // Закрываем меню, если клик вне него
+    }
+  });
 });
 
-});
 
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const burger = document.getElementById('search');
+
+    burger.addEventListener('click', () => {
+    document.querySelector('.search-form').classList.toggle('open');
+    });
+});
 </script>
 </body>
 </html>

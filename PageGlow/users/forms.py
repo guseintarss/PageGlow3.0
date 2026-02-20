@@ -6,17 +6,17 @@ from django.contrib.auth.models import User
 
 
 class LoginUserForm(AuthenticationForm):
-    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
-    password = forms.CharField( label='Пароль' ,widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField( label='Пароль' ,widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = get_user_model()
         fields = ['username', 'password']
 
 class RegisterUserForm(UserCreationForm):
-    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
-    password1 = forms.CharField( label='Пароль' ,widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    password2 = forms.CharField( label='Повторите пароль' ,widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password1 = forms.CharField( label='Пароль' ,widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password2 = forms.CharField( label='Повторите пароль' ,widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = get_user_model()
@@ -27,9 +27,9 @@ class RegisterUserForm(UserCreationForm):
             'last_name': 'Фамилия',
         }
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-input'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-input'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-input'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
     def clean_email(self):
@@ -40,26 +40,27 @@ class RegisterUserForm(UserCreationForm):
 
 class ProfileUserForm(forms.ModelForm):
     username = forms.CharField(disabled=True,label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.CharField(disabled=True,label='E-mail', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    this_year = datetime.date.today().year
-    date_birth = forms.DateField( label='Дата рождения' ,widget=forms.SelectDateWidget(years=range(this_year-50, this_year+1)))
+    email = forms.CharField(disabled=True,label='E-mail', widget=forms.EmailInput(attrs={'class': 'form-control', 'id': 'floatingInputDisabled', 'placeholder': 'name@example.com', 'value': 'mdo@example.com',}))
+    # this_year = datetime.date.today().year
+    # date_birth = forms.DateField( label='Дата рождения' ,widget=forms.SelectDateWidget(years=range(this_year-50, this_year+1)))
 
     class Meta:
         model = get_user_model()
-        fields = ['photo', 'username', 'email', 'date_birth', 'first_name', 'last_name']
+        fields = ['photo', 'username', 'email', 'first_name', 'last_name', 'about_me']
         labels = {
             'first_name': 'Имя',
             'last_name': 'Фамилия',
         }
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'date_birth': forms.DateInput(attrs={'class': 'form-select form-select-lg mb-3'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'type':'text'}),
+            # 'date_birth': forms.DateInput(attrs={'class': 'form-input'}),
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
+            'about_me': forms.TextInput(attrs={'class':'form-control', 'id':'exampleFormControlInput1'})
         }
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
-    old_password = forms.CharField(label='Старый пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    new_password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    old_password = forms.CharField(label='Старый пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password1 = forms.CharField(label='Новый пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))

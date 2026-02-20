@@ -1,0 +1,32 @@
+/* Cards / posts */
+.post{
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.post h1, .post h2{
+  margin: 0 0 10px 0;
+  line-height: 1.25;
+}
+.meta{
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 12px 0;
+}
+.read-more{
+  color: var(--primary);
+  font-weight: 600;
+}
+.read-more:hover{
+  color: var(--primary-700);
+  text-decoration: underline;
+}
+
+.img-article, .img-article-left{
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}

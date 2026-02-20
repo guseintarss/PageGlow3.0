@@ -88,7 +88,7 @@ class ShowPost(FormMixin, DataMixin, DetailView):
         allowed_tags = [
             'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
             'ul', 'ol', 'li', 'strong', 'em', 'a', 'img',
-            'blockquote', 'code', 'pre', 'i', 'span',
+            'blockquote', 'code', 'pre', 'i', 'span', 'u', 'br', 'figure',
         ]
 
         post.content = clean(post.content, tags=allowed_tags)
@@ -136,10 +136,11 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     
 class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'photo', 'is_published', 'cat']
+    form_class = AddPostForm
     template_name = 'main/addpage.html'
     success_url = reverse_lazy('home')
     title_page = 'Редактирование статьи'
+    
 
     def get_success_url(self, **kwargs):
         return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
