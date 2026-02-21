@@ -3,6 +3,8 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 
 
@@ -53,6 +55,8 @@ class Post(models.Model):
         return reverse('post', kwargs={'post_slug': self.slug})
 
     def save(self, *args, **kwargs):
+        key = make_template_fragment_key("side_cache")
+        cache.delete(key)
         self.slug = slugify(translist_to_eng(self.title))
         super().save(*args, **kwargs)
 
@@ -84,6 +88,12 @@ class TagPost(models.Model):
 
     def get_absolute_url(self):
         return reverse('tag', kwargs={'tag_slug': self.slug})
+    
+    def save(self, *args, **kwargs):
+        key = make_template_fragment_key("side_cache")
+        cache.delete(key)
+
+        super().save(*args, **kwargs)
 
 class UploadFiles(models.Model):
     file = models.FileField(upload_to='uploads_model')

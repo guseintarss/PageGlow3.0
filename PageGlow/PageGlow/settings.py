@@ -217,7 +217,7 @@ customColorPalette = [
     ]
 
 # CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
-CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] 
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png', 'jpg'] 
 
 CKEDITOR_5_CONFIGS = {
     'default': {
@@ -235,7 +235,16 @@ CKEDITOR_5_CONFIGS = {
                       'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
         },
         'image': {
-            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignRight', 'imageStyle:alignCenter', '|'],
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft',
+                        'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side',  '|'],
+            'styles': [
+                'full',
+                'side',
+                'alignLeft',
+                'alignRight',
+                'alignCenter',
+            ]
+
         },
         'simpleUpload': {
             'uploadUrl': '/ckeditor5/image_upload/', 
@@ -332,10 +341,6 @@ CKEDITOR_5_CONFIGS = {
 #     )
 # }
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
-
 DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
@@ -343,4 +348,11 @@ DJOSER = {
     'TOKEN_MODEL': None,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'ACTIVATION_URL': 'auth/verify/{uid}/{token}'
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache'),
+    }
 }

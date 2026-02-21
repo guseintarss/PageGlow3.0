@@ -354,6 +354,185 @@ a:hover{ text-decoration: underline; }
   box-shadow: 0 10px 25px rgba(12,106,207,0.25);
   z-index:2;
 }
+/* Layout */
+.page{
+  padding: 22px 0 32px;
+}
+.layout{
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 22px;
+  align-items: start;
+}
+.content{
+  min-width: 0;
+}
+.search-form{
+    display:none;
+}
+.search-form.open{
+    display:block;
+}
+.post-content blockquote {
+    margin: 15px;
+    padding-left: 20px;
+    border-left: 4px solid #47a3ff;
+}
+
+.post-content pre {
+    background: #f4f4f4;
+    padding: 10px;
+    margin: 15px 0;
+}
+
+.post-content i {
+    font-style: italic;
+}
+
+.sidebar{
+  position: sticky;
+  top: 82px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.con {
+    margin:0 auto;
+    min-width: 300px;
+    max-width:500px;
+}
+
+.sidebar-widget {
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.sidebar-widget ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-widget li {
+    margin-bottom: 5px;
+}
+.auth {
+  margin-top:10px;
+  background: var(--surface);
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+
+/* Cards / posts */
+.post{
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.post h1, .post h2{
+  margin: 0 0 10px 0;
+  line-height: 1.25;
+}
+.meta{
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 12px 0;
+}
+.read-more{
+  color: var(--primary);
+  font-weight: 600;
+}
+.read-more:hover{
+  color: var(--primary-700);
+  text-decoration: underline;
+}
+
+.img-article, .img-article-left{
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+
+/* Tags / categories */
+.cat-list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cat-selected .cat{
+  background: var(--bg);
+  color: var(--text);
+  cursor: default;
+  text-decoration: none;
+}
+.tags-list{ list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.tag{
+  padding: 6px 12px;
+  background: #eef2ff;
+  color: #3730a3;
+  border-radius: 999px;
+  border: 1px solid rgba(55,48,163,0.15);
+  font-size: 0.9rem;
+}
+.tag:hover{ text-decoration: none; filter: brightness(0.98); }
+.t-title{ font-weight: 700; margin-top: 18px; }
+.com-t{
+display:flex;
+}
+.comments{
+    margin-right:5px;
+    color: var(--text);
+    background-color: var(--text);
+}
+
+
+/* Forms */
+.form-error, .form-error ul li{
+  color: #b91c1c;
+  list-style: none;
+}
+.form-label{
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+/*
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select{
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  background: var(--bg);
+}
+  */
+textarea{ min-height: 160px; resize: vertical; }
+input:focus, textarea:focus, select:focus{
+  outline: none;
+  border-color: rgba(12,106,207,0.65);
+  box-shadow: 0 0 0 4px rgba(12,106,207,0.12);
+}
+.form-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 
 /* Icons/links inside post cards */
 .delete-post{
@@ -363,6 +542,24 @@ a:hover{ text-decoration: underline; }
   color: #dc2626;
 }
 .delete-post:hover{ color: #b91c1c; text-decoration: none; }
+/* Footer */
+.site-footer{
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+}
+.footer-container{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 110px;
+  align-items: flex-start;
+}
+.footer-copyright{
+    text-align:center;
+}
+.footer-nav ul{ list-style: none; padding: 0; margin: 0; }
+.footer-nav a, .footer-contacts a, .footer-social a{ color: var(--primary); }
+.footer-social{ display: flex; gap: 12px; flex-wrap: wrap; }
 
 /* Responsive */
 @media (max-width: 992px){

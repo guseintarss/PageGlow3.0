@@ -1,5 +1,5 @@
 {% load static %}
-{% load glow_tags %}
+{% load glow_tags cache %}
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -20,6 +20,14 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}" />
     <meta name="apple-mobile-web-app-title" content="MyWebSite" />
     <link rel="manifest" href="{% static 'images/site.webmanifest' %}" />
+    <script>
+        // Устанавливаем тему сразу, до загрузки остального JS
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
 </head>
 <body class="{% block body_class %}{% endblock %}">
 <header class="site-header">
@@ -35,8 +43,8 @@
         </nav>
 
         <div class="user-area">
-            <button id="theme-toggle" class="theme-toggle">
-                <img width="48" height="48" src="https://img.icons8.com/fluency-systems-filled/48/FFFFFF/color-dropper.png" alt="color-dropper"/>
+            <button id="theme-toggle" class="theme-toggle" aria-pressed="false">
+                ☀️
             </button>
             <a id="search" href="#">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
@@ -67,7 +75,7 @@
             </div>
             {% block content %}{% endblock %}
         </div>
-
+        {% cache 604800 side_cache %}
         <aside class="sidebar" aria-label="Боковая панель">
             {% block sidebar %}
                 <aside>
@@ -78,6 +86,7 @@
             {% endblock %}
             {% show_all_tags %}
         </aside>
+        {% endcache %}
     </div>
 
     <div class="pg-container">
@@ -131,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlElement.setAttribute('data-bs-theme', 'dark');
             if (toggleButton) {
                 toggleButton.setAttribute('data-bs-theme', 'dark');
+                toggleButton.textContent = '🌙';
             }
             localStorage.setItem('theme', 'dark');
         } else {
@@ -151,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (toggleButton) {
         toggleButton.addEventListener('click', () => {
             const isCurrentlyDark = body.classList.contains('dark-mode');
+            toggleButton.textContent = '☀️'; 
             setTheme(!isCurrentlyDark);
         });
     }
