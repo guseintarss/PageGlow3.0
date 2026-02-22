@@ -5,6 +5,8 @@ from django.urls import reverse
 from django_ckeditor_5.fields import CKEditor5Field
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from meta.models import ModelMeta
+
 
 
 
@@ -21,7 +23,7 @@ class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_published=Post.Status.PUBLISHED)
 
-class Post(models.Model):
+class Post(ModelMeta, models.Model):
     class Status(models.IntegerChoices):
         DRAFT = 0, 'Черновик'
         PUBLISHED = 1,'Опубликовано'
@@ -39,6 +41,25 @@ class Post(models.Model):
 
     objects = models.Manager()
     published = PublishedManager()
+
+    _metadata = {
+        'title': 'title',
+        'description': 'get_meta_description',
+        'keywords': 'get_keywords_list',
+        'image': 'get_image_full_url',
+    }
+
+    def get_meta_description(self):
+        return f'{self.content[:200]}...'
+
+    def get_keywords_list(self):
+        return [tag.name for tag in self.tags.all()]
+
+    def get_image_full_url(self):
+        if self.photo:
+            return self.photo.url
+        return None
+
 
     def __str__(self):
         return self.title

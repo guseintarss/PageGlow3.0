@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{%load cache%}
 {% block content %}
 <div class="post">
     <h1>{{ title }}</h1>
@@ -9,17 +8,15 @@
         {% if form.non_field_errors %}
             <div class="form-error">{{ form.non_field_errors }}</div>
         {% endif %}
-        {% cache 106800 add_page %}
-          {% for f in form %}
-              <div class="form-group">
-                  <label for="{{ field.id_for_label }}">{{ f.label }}</label>
-                  {{ f }}
-                  {% if f.errors %}
-                      <div class="form-error">{{ f.errors }}</div>
-                  {% endif %}
-              </div>
-          {% endfor %}
-        {% endcache %}
+        {% for f in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ f.label }}</label>
+                {{ f }}
+                {% if f.errors %}
+                    <div class="form-error">{{ f.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Отправить</button>
         </div>

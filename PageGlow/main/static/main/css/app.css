@@ -145,7 +145,7 @@
   cursor: pointer;
 }
 *{ box-sizing: border-box; 
-transition: all 0.2s ease;}
+transition: all 0.1s;}
 html, body{ height: 100%; overflow-x: hidden; }
 body{
   margin: 0;
@@ -173,6 +173,8 @@ a:hover{ text-decoration: underline; }
   z-index: 1000;
   background: var(--bg-header);
   color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+
 }
 .header-inner{
   display: flex;

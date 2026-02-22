@@ -1,14 +1,21 @@
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from PageGlow import settings
 from main.views import page_not_found
+from .sitemaps import PostSitemap, StaticViewSitemap
+from django.contrib.sitemaps.views import sitemap 
 
 from rest_framework.routers import DefaultRouter
 from users.views import RuleViewSet
 
 router = DefaultRouter()
 router.register(r'rules', RuleViewSet, basename='rule')
+# Карта сайта 
+sitemaps = {
+    'static': StaticViewSitemap,
+    'posts': PostSitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -17,8 +24,7 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
     path('api-auth/', include('rest_framework.urls')),
-    path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.jwt')),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
 ]
 
 if settings.DEBUG:

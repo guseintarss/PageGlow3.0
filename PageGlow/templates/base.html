@@ -1,19 +1,15 @@
 {% load static %}
-{% load glow_tags cache %}
+{% load glow_tags cache meta %}
 
 <!DOCTYPE html>
 <html lang="ru">
-<head>
+<head {% meta_namespaces_schemaorg %}>
+    {% include "meta/meta.html" %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link type="text/css" href="{% static 'main/css/app.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/forms.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/footer.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/tags_cats.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/posts.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/layouts.css' %}" rel="stylesheet"/>
     <link rel="icon" type="image/png" href="{% static 'images/favicon-96x96.png' %}" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" />
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
@@ -76,16 +72,16 @@
             {% block content %}{% endblock %}
         </div>
         {% cache 604800 side_cache %}
-        <aside class="sidebar" aria-label="Боковая панель">
-            {% block sidebar %}
-                <aside>
-                    {% block sidebar_content %}
-                        {% include 'main/includes/sidebar_new_posts.html' %}
-                    {% endblock %}
-                </aside>
-            {% endblock %}
-            {% show_all_tags %}
-        </aside>
+            <aside class="sidebar" aria-label="Боковая панель">
+                {% block sidebar %}
+                    <aside>
+                        {% block sidebar_content %}
+                            {% include 'main/includes/sidebar_new_posts.html' %}
+                        {% endblock %}
+                    </aside>
+                {% endblock %}
+                {% show_all_tags %}
+            </aside>
         {% endcache %}
     </div>
 
@@ -111,7 +107,7 @@
 
     <div class="footer-contacts">
       <p>Email: <a href="mailto:info@pageglow.com">pageglow3@gmail.com</a></p>
-      <p>Телефон: <a href="tel:+74951234567">+7 (495) 123‑45‑67</a></p>
+      <!-- <p>Телефон: <a href="tel:+74951234567">+7 (495) 123‑45‑67</a></p> -->
     </div>
 
     <div class="footer-social">

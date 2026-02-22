@@ -35,7 +35,7 @@ from .utils import DataMixin
 class MainHome(DataMixin, ListView):
     template_name = 'main/index.html'
     context_object_name = 'posts'
-    title_page = 'Главная страница'
+    title_page = 'Главная страница | PageGlow'
     cat_selected = 0
 
 
@@ -44,7 +44,6 @@ class MainHome(DataMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         return context
 
 # class CustomSuccessMessageMixin:
@@ -65,6 +64,7 @@ class ShowPost(FormMixin, DataMixin, DetailView):
     context_object_name = 'post'
     form_class = CommentForm
     success_msg = 'Комментарий оставлен'
+    title_page = Post.title
 
     def get_success_url(self, **kwargs):
         return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})

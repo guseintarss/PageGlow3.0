@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from main.storage import CustomStorage
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -49,6 +50,10 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'rest_framework',
     'djoser',
+    'meta',
+
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
 
 MIDDLEWARE = [
@@ -218,7 +223,8 @@ customColorPalette = [
 
 # CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
 CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png', 'jpg'] 
-
+CKEDITOR_5_FILE_STORAGE = "main.storage.CustomStorage" 
+CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
@@ -356,3 +362,13 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'cache'),
     }
 }
+
+
+META_SITE_PROTOCOL = 'https'
+META_SITE_DOMAIN = 'pageglow.ru'
+META_SITE_TYPE = 'website'
+META_SITE_NAME = 'PageGlow'
+META_INCLUDE_KEYWORDS = ['статьи', 'информация', 'рекомендации', 'руководства']
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_USE_SCHEMAORG_PROPERTIES = True
