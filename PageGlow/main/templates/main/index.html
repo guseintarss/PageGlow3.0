@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load main_extras cache %}
+{% load main_extras %}
 {% block content %}
 
 
@@ -31,7 +31,6 @@
             {% endautoescape %}
         </div>
         <hr>
-        {% cache 604800 tags_cache %}
             {% with p.tags.all as tags %}
                 {% if tags %}
                     <p class="t-title">Теги:</p>
@@ -43,7 +42,6 @@
                     
                 {%endif%}
             {% endwith %}
-        {% endcache %}
         <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>
     </div>
 </article>
