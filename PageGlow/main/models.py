@@ -7,8 +7,7 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from meta.models import ModelMeta
 
-
-
+from users.models import User
 
 
 def translist_to_eng(s: str) -> str:
@@ -38,6 +37,26 @@ class Post(ModelMeta, models.Model):
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категории')
     tags = models.ManyToManyField('TagPost', blank=True, related_name='tags', verbose_name='Теги')
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='posts', null=True, default=None)
+    
+    likes = models.ManyToManyField(
+        User,
+        related_name='post_likes',
+        blank=True
+    )
+
+    # Избранные
+    favorites = models.ManyToManyField(
+        User,
+        related_name='favorite_posts',
+        blank=True
+    )
+
+    def number_of_likes(self):
+        return self.likes.count()
+
+    def number_of_favorites(self):
+        return self.favorites.count()
+    
 
     objects = models.Manager()
     published = PublishedManager()
@@ -48,6 +67,9 @@ class Post(ModelMeta, models.Model):
         'keywords': 'get_keywords_list',
         'image': 'get_image_full_url',
     }
+
+    def get_meta_title(self):
+        return f'{self.title}'
 
     def get_meta_description(self):
         return f'{self.content[:200]}...'
@@ -80,6 +102,7 @@ class Post(ModelMeta, models.Model):
         cache.delete(key)
         self.slug = slugify(translist_to_eng(self.title))
         super().save(*args, **kwargs)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Категория')
@@ -119,11 +142,16 @@ class TagPost(models.Model):
 class UploadFiles(models.Model):
     file = models.FileField(upload_to='uploads_model')
 
-class Comments(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name='Статья', blank=True, null=True, related_name='comments_post')
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name='Автор комментария')
-    content = models.TextField(verbose_name='Комментарий')
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    status = models.BooleanField(default=False, verbose_name='Статус комментария')
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Comment by {self.author} on {self.post}'
 

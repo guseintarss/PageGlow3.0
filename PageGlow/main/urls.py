@@ -16,6 +16,10 @@ urlpatterns = [
     path('category/<slug:cat_slug>/', views.MainCategory.as_view(), name='category'),
     path('tag/<slug:tag_slug>/', views.TagPostList.as_view(), name='tag'),
     path('edit/<slug:slug>/', views.UpdatePage.as_view(), name='edit_page'),
-    
+    path('ajax/like/', views.PostLikeAjaxView.as_view(), name='post_like_ajax'),
+    path('ajax/favorite/', views.PostFavoriteAjaxView.as_view(), name='post_favorite_ajax'),
+    path('ajax/add-comment/', views.AddCommentAjaxView.as_view(), name='add_comment_ajax'),
+    path('ajax/delete-comment/', views.DeleteCommentAjaxView.as_view(), name='delete_comment_ajax'),
+   
 ]
 

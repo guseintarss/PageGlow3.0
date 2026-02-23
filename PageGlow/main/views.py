@@ -1,3 +1,4 @@
+
 from venv import logger
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
@@ -6,16 +7,18 @@ from django.views.generic.edit import FormMixin, DeleteView
 from requests import Response
 from bs4 import BeautifulSoup, FeatureNotFound
 from django.shortcuts import render
-
+from rest_framework.mixins import UpdateModelMixin
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions
 import math
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.uploadedfile import UploadedFile
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -26,7 +29,7 @@ from django.contrib import messages
 from PageGlow import settings
 from main.serializers import PostSerializer
 from .forms import AddPostForm, UploadFileForm, CommentForm
-from .models import Post, Category, TagPost, UploadFiles
+from .models import Post, Category, TagPost, UploadFiles, Comment
 from .utils import DataMixin
 
 
@@ -64,7 +67,6 @@ class ShowPost(FormMixin, DataMixin, DetailView):
     context_object_name = 'post'
     form_class = CommentForm
     success_msg = 'Комментарий оставлен'
-    title_page = Post.title
 
     def get_success_url(self, **kwargs):
         return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
@@ -221,3 +223,104 @@ class Search(DataMixin, ListView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
+class PostLikeAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        post_id = request.POST.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+
+        if post.likes.filter(id=request.user.id).exists():
+            # Убираем лайк
+            post.likes.remove(request.user)
+            liked = False
+        else:
+            # Добавляем лайк
+            post.likes.add(request.user)
+            liked = True
+
+        data = {
+            'success': True,
+            'liked': liked,
+            'likes_count': post.number_of_likes()
+        }
+        return JsonResponse(data)
+
+@method_decorator(login_required, name='dispatch')
+class PostFavoriteAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        post_id = request.POST.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+
+        if post.favorites.filter(id=request.user.id).exists():
+            # Убираем из избранного
+            post.favorites.remove(request.user)
+            favorited = False
+        else:
+            # Добавляем в избранное
+            post.favorites.add(request.user)
+            favorited = True
+
+        data = {
+            'success': True,
+            'favorited': favorited,
+            'favorites_count': post.number_of_favorites()
+        }
+        return JsonResponse(data)
+    
+@method_decorator(login_required, name='dispatch')
+class AddCommentAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            post_id = request.POST.get('post_id')
+            content = request.POST.get('content')
+
+            if not content or len(content.strip()) == 0:
+                return JsonResponse({
+                    'success': False,
+            'error': 'Текст комментария не может быть пустым'
+        }, status=400)
+
+            post = get_object_or_404(Post, id=post_id)
+
+            # Создаём комментарий
+            comment = Comment.objects.create(
+                post=post,
+                author=request.user,
+                content=content
+            )
+
+            data = {
+                'success': True,
+                'comment': {
+                    'id': comment.id,
+                    'content': comment.content,
+                    'author': comment.author.username,
+            'created_at': comment.created_at.strftime('%d.%m.%Y %H:%M'),
+            'is_active': comment.is_active
+                }
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@method_decorator(login_required, name='dispatch')
+class DeleteCommentAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            comment_id = request.POST.get('comment_id')
+            if not comment_id:
+                return JsonResponse({'success': False, 'error': 'ID комментария не указан'}, status=400)
+
+            comment = get_object_or_404(Comment, id=comment_id)
+
+            # Проверяем, что пользователь — автор комментария или администратор
+            if comment.author != request.user and not request.user.is_staff:
+                return JsonResponse(
+                    {'success': False, 'error': 'У вас нет прав для удаления этого комментария'},
+            status=403
+        )
+
+            comment.delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)

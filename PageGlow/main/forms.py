@@ -44,8 +44,9 @@ class UploadFileForm(forms.Form):
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = Comments
+        model = Comment
         fields = ['content']
         widgets = {
             'content': forms.Textarea(attrs={'rows': 1, 'class': "form-control",}),
         }
+

@@ -498,6 +498,24 @@ display:flex;
 }
 
 
+.comment {
+    margin-top: 20px;
+    background-color: var(--surface);
+    border-left: 4px solid #007bff;
+}
+
+.delete-comment {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.comment:hover .delete-comment {
+    opacity: 1;
+}
+
+
+
+
 /* Forms */
 .form-error, .form-error ul li{
   color: #b91c1c;
@@ -507,6 +525,19 @@ display:flex;
   display: block;
   font-weight: 600;
   margin-bottom: 6px;
+}
+
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border: 0.25em solid transparent;
+    border-top: 0.25em solid #fff;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
 }
 /*
 input[type="text"],
