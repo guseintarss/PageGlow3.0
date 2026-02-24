@@ -67,6 +67,9 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
+
+SITE_ID = 1
+
 ROOT_URLCONF = 'PageGlow.urls'
 
 TEMPLATES = [

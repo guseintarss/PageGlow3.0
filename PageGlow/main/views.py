@@ -30,7 +30,7 @@ from PageGlow import settings
 from main.serializers import PostSerializer
 from .forms import AddPostForm, UploadFileForm, CommentForm
 from .models import Post, Category, TagPost, UploadFiles, Comment
-from .utils import DataMixin
+from .utils import DataMixin, extract_title_from_content, insert_title_into_content
 
 
 
@@ -136,19 +136,63 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
         return super().form_valid(form)
     
+# class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
+#     model = Post
+#     form_class = AddPostForm
+#     template_name = 'main/addpage.html'
+#     success_url = reverse_lazy('home')
+#     title_page = 'Редактирование статьи'
+    
+
+#     def get_success_url(self, **kwargs):
+#         return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
+
+def login(request):
+    return render(request, 'main/login.html')
+
+
 class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
     model = Post
     form_class = AddPostForm
     template_name = 'main/addpage.html'
-    success_url = reverse_lazy('home')
-    title_page = 'Редактирование статьи'
-    
+    context_object_name = 'post'
 
-    def get_success_url(self, **kwargs):
+    def get_initial(self):
+        """
+        При загрузке формы для редактирования:
+        1. Извлекаем заголовок из content (если есть <h1>)
+        2. Показываем его в поле title
+        3. content остаётся неизменным (без изменений)
+        """
+        initial = super().get_initial()
+        initial['title'] = extract_title_from_content(self.object.content)
+        return initial
+
+    def form_valid(self, form):
+        """
+        При сохранении:
+        1. Берём текущий title из формы
+        2. Вставляем его в content как <h1> (заменяем существующий или добавляем в начало)
+        3. Сохраняем оба поля
+        """
+        # Вставляем заголовок из поля title в content как <h1>
+        form.instance.content = insert_title_into_content(
+            form.cleaned_data['title'],
+            form.cleaned_data['content']
+        )
+
+        # Извлекаем заголовок обратно из обновлённого content для сохранения в title
+        # Это гарантирует согласованность данных
+        title_from_updated_content = extract_title_from_content(form.instance.content)
+        if title_from_updated_content:
+            form.instance.title = title_from_updated_content
+
+        response = super().form_valid(form)
+        messages.success(self.request, 'Статья успешно обновлена!')
+        return response
+
+    def get_success_url(self):
         return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
-
-def login(request):
-    return render(request, 'main/login.html')
 
 
 class PostDeleteView(LoginRequiredMixin, DataMixin, DeleteView):

@@ -10,6 +10,10 @@
         {% endif %}
         {% for f in form %}
             <div class="form-group">
+              <div class="mb-3">
+                <label for="id_title" class="form-label">Заголовок</label>
+                {{ form.title }}
+              </div>
                 <label for="{{ field.id_for_label }}">{{ f.label }}</label>
                 {{ f }}
                 {% if f.errors %}
@@ -46,6 +50,46 @@
 
 </script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const editorElement = document.querySelector('#editor');
+  if (editorElement) {
+    ClassicEditor
+      .create(editorElement, {
+        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo']
+      })
+      .then(editor => {
+        const titleInput = document.querySelector('#id_title');
+
+        // При редактировании: извлекаем заголовок из content и показываем в поле title
+        const currentContent = editor.getData();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(currentContent, 'text/html');
+        const h1 = doc.querySelector('h1');
+        if (h1 && h1.textContent.trim()) {
+          titleInput.value = h1.textContent.trim();
+        }
+
+        // Синхронизируем заголовок при его изменении в поле ввода
+        titleInput.addEventListener('input', function() {
+          const newTitle = this.value;
+          let currentData = editor.getData();
+
+          // Заменяем существующий <h1> или добавляем новый в начало
+          if (currentData.includes('<h1>')) {
+            currentData = currentData.replace(/<h1>.*?<\/h1>/, `<h1>${newTitle}</h1>`);
+          } else {
+            currentData = `<h1>${newTitle}</h1>${currentData}`;
+          }
+          editor.setData(currentData);
+        });
+      })
+      .catch(error => {
+        console.error('CKEditor error:', error);
+      });
+  }
+});
+</script>
+<!-- <script>
   ClassicEditor
   .create(document.querySelector('#your-textarea-id'), {
     // настройки
@@ -53,7 +97,7 @@
   .catch(error => {
     console.error(error); // проверьте консоль на ошибки
   });
-</script>
+</script> -->
 <script>
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 

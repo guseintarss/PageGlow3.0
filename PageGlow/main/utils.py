@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from PageGlow import settings
 import logging
 
@@ -79,3 +80,27 @@ class DataMixin:
             context['comments'] = self.object.comments.filter(is_active=True)
 
         return self.get_mixin_context(context, **kwargs)
+
+
+def extract_title_from_content(html_content):
+    """Извлекает текст из первого тега <h1> в HTML‑контенте."""
+    soup = BeautifulSoup(html_content, 'html.parser')
+    h1_tag = soup.find('h1')
+    if h1_tag and h1_tag.get_text(strip=True):
+        return h1_tag.get_text(strip=True)
+    return ''
+
+def insert_title_into_content(title, html_content):
+    """Вставляет заголовок как <h1> в начало контента, заменяя существующий <h1>, если есть."""
+    soup = BeautifulSoup(html_content, 'html.parser')
+    h1_tag = soup.find('h1')
+
+    if h1_tag:
+        h1_tag.string = title
+    else:
+        # Создаём новый тег h1 и вставляем в начало
+        new_h1 = soup.new_tag('h1')
+        new_h1.string = title
+        soup.insert(0, new_h1)
+
+    return str(soup)

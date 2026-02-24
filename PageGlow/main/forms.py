@@ -24,7 +24,7 @@ class AddPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = [ 'content', 'is_published', 'cat', 'tags']
+        fields = ['content', 'is_published', 'cat', 'tags']
         widgets = {
             'photo': forms.ClearableFileInput(attrs={'class':'form-control'}),
             'tags': forms.SelectMultiple(attrs={'class':'form-control'}),
