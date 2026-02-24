@@ -225,9 +225,9 @@ customColorPalette = [
     ]
 
 # CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
-CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png', 'jpg'] 
-CKEDITOR_5_FILE_STORAGE = "main.storage.CustomStorage" 
-CKEDITOR_IMAGE_BACKEND = "pillow"
+# CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png', 'jpg'] 
+# CKEDITOR_5_FILE_STORAGE = "main.storage.CustomStorage" 
+# CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
@@ -243,22 +243,10 @@ CKEDITOR_5_CONFIGS = {
             'items': ['heading', '|', 'bold', 'italic', 'link',
                       'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
         },
-        'image': {
-            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft',
-                        'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side',  '|'],
-            'styles': [
-                'full',
-                'side',
-                'alignLeft',
-                'alignRight',
-                'alignCenter',
-            ]
-
-        },
         'simpleUpload': {
             'uploadUrl': '/ckeditor5/image_upload/', 
         },
-        'placeholder': 'Заголовок'
+        'placeholder': 'Заголовок',
     },
     'code_mode': {
         'toolbar': ['codeBlock', '|', 'undo', 'redo'],

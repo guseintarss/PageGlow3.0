@@ -38,6 +38,26 @@ class AddPostForm(forms.ModelForm):
             content = '<h1>Заголовок</h1>' + content
         return content
 
+class PostUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'photo', 'cat', 'tags']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите заголовок'
+            }),
+            'photo': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
+            }),
+            'cat': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'tags': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }
+
 class UploadFileForm(forms.Form):
     file = forms.FileField(label='Файл',widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
 

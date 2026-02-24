@@ -10,10 +10,6 @@
         {% endif %}
         {% for f in form %}
             <div class="form-group">
-              <div class="mb-3">
-                <label for="id_title" class="form-label">Заголовок</label>
-                {{ form.title }}
-              </div>
                 <label for="{{ field.id_for_label }}">{{ f.label }}</label>
                 {{ f }}
                 {% if f.errors %}
@@ -51,36 +47,30 @@
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const editorElement = document.querySelector('#editor');
+  const editorElement = document.querySelector('#id_content');
   if (editorElement) {
     ClassicEditor
-      .create(editorElement, {
-        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo']
-      })
       .then(editor => {
-        const titleInput = document.querySelector('#id_title');
-
-        // При редактировании: извлекаем заголовок из content и показываем в поле title
-        const currentContent = editor.getData();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(currentContent, 'text/html');
-        const h1 = doc.querySelector('h1');
-        if (h1 && h1.textContent.trim()) {
-          titleInput.value = h1.textContent.trim();
+        // Если это новая статья и контент пустой, добавляем placeholder с заголовком
+        if (!editor.getData()) {
+          editor.setData('<h1>Введите заголовок статьи</h1><p>Начните писать статью...</p>');
         }
 
-        // Синхронизируем заголовок при его изменении в поле ввода
-        titleInput.addEventListener('input', function() {
-          const newTitle = this.value;
-          let currentData = editor.getData();
+        // При изменении контента отслеживаем изменения в <h1>
+        editor.model.document.on('change:data', () => {
+          const data = editor.getData();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(data, 'text/html');
+          const h1 = doc.querySelector('h1');
 
-          // Заменяем существующий <h1> или добавляем новый в начало
-          if (currentData.includes('<h1>')) {
-            currentData = currentData.replace(/<h1>.*?<\/h1>/, `<h1>${newTitle}</h1>`);
-          } else {
-            currentData = `<h1>${newTitle}</h1>${currentData}`;
+          // Обновляем заголовок страницы, если он изменился
+          const pageTitle = document.querySelector('h2');
+          if (h1 && pageTitle) {
+            const newTitle = h1.textContent.trim();
+            if (newTitle) {
+              pageTitle.textContent = `Редактирование статьи: ${newTitle}`;
+            }
           }
-          editor.setData(currentData);
         });
       })
       .catch(error => {
