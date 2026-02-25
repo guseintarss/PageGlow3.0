@@ -1,4 +1,6 @@
 
+import logging
+import os
 from venv import logger
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
@@ -25,8 +27,11 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
 from django.contrib import messages
+from django.core.files.storage import FileSystemStorage
 
 from PageGlow import settings
+from main import serializers
+from PageGlow.settings import CKEDITOR_UPLOAD_PATH
 from main.serializers import PostSerializer
 from .forms import AddPostForm, PostUpdateForm, UploadFileForm, CommentForm
 from .models import Post, Category, TagPost, UploadFiles, Comment
@@ -136,6 +141,11 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
         return super().form_valid(form)
     
+    def get_success_url(self):
+            return reverse_lazy('users:profile')
+    
+
+
 class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
     model = Post
     form_class = PostUpdateForm
@@ -149,51 +159,6 @@ class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
 
 def login(request):
     return render(request, 'main/login.html')
-
-
-# class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
-#     model = Post
-#     form_class = AddPostForm
-#     template_name = 'main/addpage.html'
-#     context_object_name = 'post'
-
-#     def get_initial(self):
-#         """
-#         При загрузке формы для редактирования:
-#         1. Извлекаем заголовок из content (если есть <h1>)
-#         2. Показываем его в поле title
-#         3. content остаётся неизменным (без изменений)
-#         """
-#         initial = super().get_initial()
-#         initial['title'] = extract_title_from_content(self.object.content)
-#         return initial
-
-#     def form_valid(self, form):
-#         """
-#         При сохранении:
-#         1. Берём текущий title из формы
-#         2. Вставляем его в content как <h1> (заменяем существующий или добавляем в начало)
-#         3. Сохраняем оба поля
-#         """
-#         # Вставляем заголовок из поля title в content как <h1>
-#         form.instance.content = insert_title_into_content(
-#             form.cleaned_data['title'],
-#             form.cleaned_data['content']
-#         )
-
-#         # Извлекаем заголовок обратно из обновлённого content для сохранения в title
-#         # Это гарантирует согласованность данных
-#         title_from_updated_content = extract_title_from_content(form.instance.content)
-#         if title_from_updated_content:
-#             form.instance.title = title_from_updated_content
-
-#         response = super().form_valid(form)
-#         messages.success(self.request, 'Статья успешно обновлена!')
-#         return response
-
-#     def get_success_url(self):
-#         return reverse_lazy('post', kwargs={'post_slug': self.get_object().slug})
-
 
 class PostDeleteView(LoginRequiredMixin, DataMixin, DeleteView):
     model = Post
@@ -218,11 +183,6 @@ class MainCategory(DataMixin, ListView):
         context = super().get_context_data(**kwargs)
         cat = context["posts"][0].cat
         return self.get_mixin_context(context, title='Категория - ' + cat.name, cat_selected=cat.pk)
-
-
-# class MyModelList(ListAPIView):
-#     queryset = Post.objects.all()
-#     serializer_class = PostSerializer
 
 def page_not_found(request, exception):
     return render(request, '404.html', status=404)
@@ -368,3 +328,27 @@ class DeleteCommentAjaxView(View):
             return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        
+
+
+# @login_required
+# def toggle_favorite(request, post_id):
+#     post = get_object_or_404(Post, id=post_id, author=request.user)
+#     post.is_favorite = not post.is_favorite
+#     post.save()
+#     return redirect('profile')
+
+class CKEditorUploadView(View):
+    def post(self, request):
+        file = request.FILES.get('upload')
+        if file:
+            if file.size > 10 * 1024 * 1024:  
+                return JsonResponse({'uploaded': False, 'error': 'Файл слишком большой'}, status=400)
+            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, CKEDITOR_UPLOAD_PATH))
+            filename = fs.save(file.name, file)
+            file_url = fs.url(filename)
+            return JsonResponse({
+                'uploaded': True,
+                'url': file_url
+            })
+        return JsonResponse({'uploaded': False}, status=403)

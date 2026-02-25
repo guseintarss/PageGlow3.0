@@ -244,7 +244,7 @@ CKEDITOR_5_CONFIGS = {
                       'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
         },
         'simpleUpload': {
-            'uploadUrl': '/ckeditor5/image_upload/', 
+            'uploadUrl': '/ckeditor/upload/', 
         },
         'placeholder': 'Заголовок',
     },
@@ -319,6 +319,8 @@ CKEDITOR_5_CONFIGS = {
     }
 
 }
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

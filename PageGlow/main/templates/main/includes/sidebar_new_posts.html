@@ -5,9 +5,9 @@
             <hr>
             <li>
                 <a class="new_posts" href="{% url 'post' post.slug %}">{{ post.title }}</a>
+                
                 <small>{{ post.created_at|date:"d.m.Y" }}</small>
             </li>
-
         {% endfor %}
     </ul>
 </div>

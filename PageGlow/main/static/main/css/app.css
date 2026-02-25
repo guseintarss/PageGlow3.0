@@ -348,7 +348,6 @@ a:hover{ text-decoration: underline; }
   background-color: var(--primary-700);
   border-color: var(--primary-700);
 }
-
 /* Floating add button */
 .addbutton{
   position: fixed;

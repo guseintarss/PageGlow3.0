@@ -41,20 +41,23 @@ class AddPostForm(forms.ModelForm):
 class PostUpdateForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'photo', 'cat', 'tags']
+        fields = ['title', 'content', 'photo', 'is_published', 'cat', 'tags']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Введите заголовок'
             }),
             'photo': forms.ClearableFileInput(attrs={
-                'class': 'form-control'
+                'class': 'form-control', 'id': 'file',
             }),
             'cat': forms.Select(attrs={
                 'class': 'form-select'
             }),
-            'tags': forms.Select(attrs={
-                'class': 'form-control'
+            'tags': forms.SelectMultiple(attrs={
+                'class': 'form-select',
+            }),
+            'is_published':forms.Select(attrs={
+                'class':'form-control'
             })
         }
 

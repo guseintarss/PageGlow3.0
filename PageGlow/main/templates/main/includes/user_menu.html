@@ -19,8 +19,8 @@
     <ul class="dropdown-list">
       <li><a href="{% url 'users:profile' %}"><i class="fas fa-user me-2"></i> Мой профиль</a></li>
       <li><a href="{% url 'users:edit_profile' %}"><i class="fas fa-cog me-2"></i> Настройки</a></li>
-      <li><a href="#"><i class="fas fa-pen me-2"></i> Мои статьи</a></li>
-      <li><a href="#"><i class="fas fa-star me-2"></i> Избранное</a></li>
+      <li><a href="#" aria-disabled="true"><i class="fas fa-pen me-2"></i> Мои статьи(недоступно)</a></li>
+      <li><a href="#" aria-disabled="true"><i class="fas fa-star me-2"></i> Избранное(недоступно)</a></li>
       <li><hr></li>
       <li>
         <form method="post" action="{% url 'users:logout' %}" class="m-0">
