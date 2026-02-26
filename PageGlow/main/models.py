@@ -3,8 +3,11 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django_ckeditor_5.fields import CKEditor5Field
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
+from meta.models import ModelMeta
 
-
+from users.models import User
 
 
 def translist_to_eng(s: str) -> str:
@@ -19,7 +22,7 @@ class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_published=Post.Status.PUBLISHED)
 
-class Post(models.Model):
+class Post(ModelMeta, models.Model):
     class Status(models.IntegerChoices):
         DRAFT = 0, 'Черновик'
         PUBLISHED = 1,'Опубликовано'
@@ -34,9 +37,51 @@ class Post(models.Model):
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категории')
     tags = models.ManyToManyField('TagPost', blank=True, related_name='tags', verbose_name='Теги')
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='posts', null=True, default=None)
+    
+    likes = models.ManyToManyField(
+        User,
+        related_name='post_likes',
+        blank=True
+    )
+
+    # Избранные
+    favorites = models.ManyToManyField(
+        User,
+        related_name='favorite_posts',
+        blank=True
+    )
+
+    def number_of_likes(self):
+        return self.likes.count()
+
+    def number_of_favorites(self):
+        return self.favorites.count()
+    
 
     objects = models.Manager()
     published = PublishedManager()
+
+    _metadata = {
+        'title': 'title',
+        'description': 'get_meta_description',
+        'keywords': 'get_keywords_list',
+        'image': 'get_image_full_url',
+    }
+
+    def get_meta_title(self):
+        return f'{self.title}'
+
+    def get_meta_description(self):
+        return f'{self.content[:200]}...'
+
+    def get_keywords_list(self):
+        return [tag.name for tag in self.tags.all()]
+
+    def get_image_full_url(self):
+        if self.photo:
+            return self.photo.url
+        return None
+
 
     def __str__(self):
         return self.title
@@ -53,8 +98,11 @@ class Post(models.Model):
         return reverse('post', kwargs={'post_slug': self.slug})
 
     def save(self, *args, **kwargs):
+        key = make_template_fragment_key("side_cache")
+        cache.delete(key)
         self.slug = slugify(translist_to_eng(self.title))
         super().save(*args, **kwargs)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Категория')
@@ -84,15 +132,26 @@ class TagPost(models.Model):
 
     def get_absolute_url(self):
         return reverse('tag', kwargs={'tag_slug': self.slug})
+    
+    def save(self, *args, **kwargs):
+        key = make_template_fragment_key("side_cache")
+        cache.delete(key)
+
+        super().save(*args, **kwargs)
 
 class UploadFiles(models.Model):
     file = models.FileField(upload_to='uploads_model')
 
-class Comments(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name='Статья', blank=True, null=True, related_name='comments_post')
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name='Автор комментария')
-    content = models.TextField(verbose_name='Комментарий')
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    status = models.BooleanField(default=False, verbose_name='Статус комментария')
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Comment by {self.author} on {self.post}'
 

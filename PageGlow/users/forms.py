@@ -56,7 +56,7 @@ class ProfileUserForm(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'type':'text'}),
             # 'date_birth': forms.DateInput(attrs={'class': 'form-input'}),
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
-            'about_me': forms.TextInput(attrs={'class':'form-control', 'id':'exampleFormControlInput1'})
+            'about_me': forms.Textarea(attrs={'class':'form-control', 'id':'exampleFormControlTextarea1', 'rows':'3'})
         }
 
 

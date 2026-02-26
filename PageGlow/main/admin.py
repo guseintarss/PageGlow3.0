@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.utils.safestring import mark_safe
 
 
-from .models import Post, Category
+from .models import Post, Category, TagPost
 
 
 @admin.register(Post)
@@ -45,3 +45,9 @@ class CategoryAdmin(admin.ModelAdmin):
     readonly_fields = ['slug']
     list_display_links = ('id', 'name')
 # admin.site.register(Post, PostAdmin)
+
+@admin.register(TagPost)
+class TagsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'tag')
+    readonly_fields = ['slug']
+    list_display_links = ('id', 'tag')

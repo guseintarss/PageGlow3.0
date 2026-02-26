@@ -113,11 +113,32 @@ def profile_user(request):
     elif post_data == 'drafts':
         return Post.objects.filter(is_published=False).order_by('-created')
 
+    user = request.user
+
+    # Опубликованные посты (используем кастомный менеджер)
+    published_posts = Post.published.filter(author=user)
+    print(f"Published: {published_posts.count()}")
+    # Черновики (is_published = DRAFT)
+    drafts = Post.objects.filter(
+        author=user,
+        is_published=Post.Status.DRAFT
+    )    
+    print(f"Drafts: {drafts.count()}")
+
+    # Избранные посты (используем ManyToMany поле 'favorites')
+    favorites = Post.objects.filter(
+        favorites=user  # Посты, где текущий пользователь в списке избранных
+    )
+    print(f"Favorites: {favorites.count()}")
 
     extra_context = {
         'title': 'Профиль пользователя',
         'default_image': settings.DEFAULT_USER_IMAGE,
         'posts': post_data,
+        'published_posts': published_posts,
+        'drafts': drafts,
+        'favorites': favorites,
+        'user': user,
     }
     return render(request, 'users/profile.html', extra_context)
 

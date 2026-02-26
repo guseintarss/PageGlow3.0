@@ -19,15 +19,29 @@
             {% endif %}
             <a href="{% url 'users:profile' %}" class="user-username">{{p.author.username|default:'Неизвестно'}}</a>
         </div>
-        <h2>{{ p.title }}</h2>
-        {% if p.photo %}
-            <p><img class="img-article-left thumb" src="{{p.photo.url}}" alt=""></p>
-        {% endif %}
-        {% autoescape off %}
-        <p class="meta">{{ p.meta }}</p>
-        {{ p.content|truncatewords:40|safe }}
-        {% endautoescape %}
-        <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}}</p>
+        <div>
+            <h2>{{ p.title }}</h2>
+            <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}}</p>
+            {% if p.photo %}
+                <p><img class="img-article-left thumb" src="{{p.photo.url}}" alt=""></p>
+            {% endif %}
+            {% autoescape off %}
+            <p class="meta">{{ p.meta }}</p>
+            {{ p.content|truncatewords:20|safe }}
+            {% endautoescape %}
+        </div>
+        <hr>
+            {% with p.tags.all as tags %}
+                {% if tags %}
+                    <p class="t-title">Теги:</p>
+                    <ul class="tags-list">
+                        {% for t in tags %}
+                            <li><a href="{{t.get_absolute_url}}">{{t.tag}}</a></li>
+                        {% endfor %}
+                    </ul>
+                    
+                {%endif%}
+            {% endwith %}
         <p><a class="read-more" href="{{ p.get_absolute_url }}">Читать далее→</a></p>
     </div>
 </article>

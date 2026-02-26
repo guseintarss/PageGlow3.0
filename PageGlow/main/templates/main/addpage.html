@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="post">
     <h1>{{ title }}</h1>
@@ -9,7 +8,6 @@
         {% if form.non_field_errors %}
             <div class="form-error">{{ form.non_field_errors }}</div>
         {% endif %}
-
         {% for f in form %}
             <div class="form-group">
                 <label for="{{ field.id_for_label }}">{{ f.label }}</label>
@@ -19,7 +17,6 @@
                 {% endif %}
             </div>
         {% endfor %}
-
         <div class="form-actions">
             <button class="btn btn-primary" type="submit">Отправить</button>
         </div>
@@ -49,6 +46,40 @@
 
 </script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const editorElement = document.querySelector('#id_content');
+  if (editorElement) {
+    ClassicEditor
+      .then(editor => {
+        // Если это новая статья и контент пустой, добавляем placeholder с заголовком
+        if (!editor.getData()) {
+          editor.setData('<h1>Введите заголовок статьи</h1><p>Начните писать статью...</p>');
+        }
+
+        // При изменении контента отслеживаем изменения в <h1>
+        editor.model.document.on('change:data', () => {
+          const data = editor.getData();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(data, 'text/html');
+          const h1 = doc.querySelector('h1');
+
+          // Обновляем заголовок страницы, если он изменился
+          const pageTitle = document.querySelector('h2');
+          if (h1 && pageTitle) {
+            const newTitle = h1.textContent.trim();
+            if (newTitle) {
+              pageTitle.textContent = `Редактирование статьи: ${newTitle}`;
+            }
+          }
+        });
+      })
+      .catch(error => {
+        console.error('CKEditor error:', error);
+      });
+  }
+});
+</script>
+<!-- <script>
   ClassicEditor
   .create(document.querySelector('#your-textarea-id'), {
     // настройки
@@ -56,7 +87,7 @@
   .catch(error => {
     console.error(error); // проверьте консоль на ошибки
   });
-</script>
+</script> -->
 <script>
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 

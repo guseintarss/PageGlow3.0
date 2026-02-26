@@ -1,3 +1,6 @@
+
+import logging
+import os
 from venv import logger
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
@@ -6,27 +9,32 @@ from django.views.generic.edit import FormMixin, DeleteView
 from requests import Response
 from bs4 import BeautifulSoup, FeatureNotFound
 from django.shortcuts import render
-
+from rest_framework.mixins import UpdateModelMixin
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions
 import math
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.uploadedfile import UploadedFile
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView
 from django.contrib import messages
+from django.core.files.storage import FileSystemStorage
 
 from PageGlow import settings
+from main import serializers
+from PageGlow.settings import CKEDITOR_UPLOAD_PATH
 from main.serializers import PostSerializer
-from .forms import AddPostForm, UploadFileForm, CommentForm
-from .models import Post, Category, TagPost, UploadFiles
+from .forms import AddPostForm, PostUpdateForm, UploadFileForm, CommentForm
+from .models import Post, Category, TagPost, UploadFiles, Comment
 from .utils import DataMixin
 
 
@@ -35,7 +43,7 @@ from .utils import DataMixin
 class MainHome(DataMixin, ListView):
     template_name = 'main/index.html'
     context_object_name = 'posts'
-    title_page = 'Главная страница'
+    title_page = 'Главная страница | PageGlow'
     cat_selected = 0
 
 
@@ -44,7 +52,6 @@ class MainHome(DataMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         return context
 
 # class CustomSuccessMessageMixin:
@@ -134,9 +141,14 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
         return super().form_valid(form)
     
+    def get_success_url(self):
+            return reverse_lazy('users:profile')
+    
+
+
 class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
     model = Post
-    form_class = AddPostForm
+    form_class = PostUpdateForm
     template_name = 'main/addpage.html'
     success_url = reverse_lazy('home')
     title_page = 'Редактирование статьи'
@@ -147,7 +159,6 @@ class UpdatePage(LoginRequiredMixin, DataMixin, UpdateView):
 
 def login(request):
     return render(request, 'main/login.html')
-
 
 class PostDeleteView(LoginRequiredMixin, DataMixin, DeleteView):
     model = Post
@@ -172,11 +183,6 @@ class MainCategory(DataMixin, ListView):
         context = super().get_context_data(**kwargs)
         cat = context["posts"][0].cat
         return self.get_mixin_context(context, title='Категория - ' + cat.name, cat_selected=cat.pk)
-
-
-# class MyModelList(ListAPIView):
-#     queryset = Post.objects.all()
-#     serializer_class = PostSerializer
 
 def page_not_found(request, exception):
     return render(request, '404.html', status=404)
@@ -221,3 +227,128 @@ class Search(DataMixin, ListView):
         return context
 
 
+@method_decorator(login_required, name='dispatch')
+class PostLikeAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        post_id = request.POST.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+
+        if post.likes.filter(id=request.user.id).exists():
+            # Убираем лайк
+            post.likes.remove(request.user)
+            liked = False
+        else:
+            # Добавляем лайк
+            post.likes.add(request.user)
+            liked = True
+
+        data = {
+            'success': True,
+            'liked': liked,
+            'likes_count': post.number_of_likes()
+        }
+        return JsonResponse(data)
+
+@method_decorator(login_required, name='dispatch')
+class PostFavoriteAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        post_id = request.POST.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+
+        if post.favorites.filter(id=request.user.id).exists():
+            # Убираем из избранного
+            post.favorites.remove(request.user)
+            favorited = False
+        else:
+            # Добавляем в избранное
+            post.favorites.add(request.user)
+            favorited = True
+
+        data = {
+            'success': True,
+            'favorited': favorited,
+            'favorites_count': post.number_of_favorites()
+        }
+        return JsonResponse(data)
+    
+@method_decorator(login_required, name='dispatch')
+class AddCommentAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            post_id = request.POST.get('post_id')
+            content = request.POST.get('content')
+
+            if not content or len(content.strip()) == 0:
+                return JsonResponse({
+                    'success': False,
+            'error': 'Текст комментария не может быть пустым'
+        }, status=400)
+
+            post = get_object_or_404(Post, id=post_id)
+
+            # Создаём комментарий
+            comment = Comment.objects.create(
+                post=post,
+                author=request.user,
+                content=content
+            )
+
+            data = {
+                'success': True,
+                'comment': {
+                    'id': comment.id,
+                    'content': comment.content,
+                    'author': comment.author.username,
+            'created_at': comment.created_at.strftime('%d.%m.%Y %H:%M'),
+            'is_active': comment.is_active
+                }
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@method_decorator(login_required, name='dispatch')
+class DeleteCommentAjaxView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            comment_id = request.POST.get('comment_id')
+            if not comment_id:
+                return JsonResponse({'success': False, 'error': 'ID комментария не указан'}, status=400)
+
+            comment = get_object_or_404(Comment, id=comment_id)
+
+            # Проверяем, что пользователь — автор комментария или администратор
+            if comment.author != request.user and not request.user.is_staff:
+                return JsonResponse(
+                    {'success': False, 'error': 'У вас нет прав для удаления этого комментария'},
+            status=403
+        )
+
+            comment.delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        
+
+
+# @login_required
+# def toggle_favorite(request, post_id):
+#     post = get_object_or_404(Post, id=post_id, author=request.user)
+#     post.is_favorite = not post.is_favorite
+#     post.save()
+#     return redirect('profile')
+
+class CKEditorUploadView(View):
+    def post(self, request):
+        file = request.FILES.get('upload')
+        if file:
+            if file.size > 10 * 1024 * 1024:  
+                return JsonResponse({'uploaded': False, 'error': 'Файл слишком большой'}, status=400)
+            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, CKEDITOR_UPLOAD_PATH))
+            filename = fs.save(file.name, file)
+            file_url = fs.url(filename)
+            return JsonResponse({
+                'uploaded': True,
+                'url': file_url
+            })
+        return JsonResponse({'uploaded': False}, status=403)

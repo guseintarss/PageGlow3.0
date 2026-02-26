@@ -1,25 +1,22 @@
 {% load static %}
-{% load glow_tags %}
+{% load glow_tags cache meta %}
 
 <!DOCTYPE html>
 <html lang="ru">
-<head>
+<head {% meta_namespaces_schemaorg %}>
+    {% include "meta/meta.html" %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link type="text/css" href="{% static 'main/css/app.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/forms.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/footer.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/tags_cats.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/posts.css' %}" rel="stylesheet"/>
-    <link type="text/css" href="{% static 'main/css/layouts.css' %}" rel="stylesheet"/>
     <link rel="icon" type="image/png" href="{% static 'images/favicon-96x96.png' %}" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" />
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}" />
     <meta name="apple-mobile-web-app-title" content="MyWebSite" />
     <link rel="manifest" href="{% static 'images/site.webmanifest' %}" />
+    {% block head %}{% endblock %}
     <script>
         // Устанавливаем тему сразу, до загрузки остального JS
         const savedTheme = localStorage.getItem('theme');
@@ -43,8 +40,8 @@
         </nav>
 
         <div class="user-area">
-            <button id="theme-toggle" class="theme-toggle">
-                <img width="48" height="48" src="https://img.icons8.com/fluency-systems-filled/48/FFFFFF/color-dropper.png" alt="color-dropper"/>
+            <button id="theme-toggle" class="theme-toggle" aria-pressed="false">
+                ☀️
             </button>
             <a id="search" href="#">
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
@@ -52,18 +49,14 @@
                 </svg>
             </a>
             {% if user.is_authenticated %}
-                <a class="user-profile" href="{% url 'users:profile' %}">{{ user.username }}</a>
-                {% if user.photo %}
-                    <img class="user-avatar" src="{{ user.photo.url }}" alt="Аватар пользователя">
-                {% else %}
-                    <img class="user-avatar" src="{{ default_image }}" alt="Аватар пользователя">
-                {% endif %}
+                {% include 'main/includes/user_menu.html' %}
             {% else %}
                 <a class="login-pill" href="{% url 'users:login' %}">Войти</a>
             {% endif %}
         </div>
     </div>
 </header>
+
 <main class="page">
     <div class="pg-container layout">
         <div class="content">
@@ -75,17 +68,18 @@
             </div>
             {% block content %}{% endblock %}
         </div>
-
-        <aside class="sidebar" aria-label="Боковая панель">
-            {% block sidebar %}
-                <aside>
-                    {% block sidebar_content %}
-                        {% include 'main/includes/sidebar_new_posts.html' %}
-                    {% endblock %}
-                </aside>
-            {% endblock %}
-            {% show_all_tags %}
-        </aside>
+        {% cache 604800 side_cache %}
+            <aside class="sidebar" aria-label="Боковая панель">
+                {% block sidebar %}
+                    <aside>
+                        {% block sidebar_content %}
+                            {% include 'main/includes/sidebar_new_posts.html' %}
+                        {% endblock %}
+                    </aside>
+                {% endblock %}
+                {% show_all_tags %}
+            </aside>
+        {% endcache %}
     </div>
 
     <div class="pg-container">
@@ -110,7 +104,7 @@
 
     <div class="footer-contacts">
       <p>Email: <a href="mailto:info@pageglow.com">pageglow3@gmail.com</a></p>
-      <p>Телефон: <a href="tel:+74951234567">+7 (495) 123‑45‑67</a></p>
+      <!-- <p>Телефон: <a href="tel:+74951234567">+7 (495) 123‑45‑67</a></p> -->
     </div>
 
     <div class="footer-social">
@@ -127,6 +121,40 @@
 {% block extra_js %}{% endblock %}
 <script src="https://cdn.ckeditor.com/ckeditor5/32.1.0/classic/ckeditor.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const avatarToggle = document.getElementById('avatar-toggle');
+  const dropdownMenu = document.getElementById('user-dropdown');
+
+  // Переключение меню при клике на аватар
+  avatarToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    dropdownMenu.style.display =
+      dropdownMenu.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Закрытие меню при клике вне его области
+  document.addEventListener('click', function(e) {
+    if (!avatarToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.style.display = 'none';
+    }
+  });
+
+  // Закрытие меню при нажатии Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      dropdownMenu.style.display = 'none';
+    }
+  });
+});
+
+</script>
+<script>
+  document.body.addEventListener('htmx:configRequest', function (event) {
+    event.detail.headers['X-CSRFToken'] = document.querySelector('meta[name="csrf-token"]').content;
+});
+
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
     const toggleButton = document.getElementById('theme-toggle');
     const body = document.body;
@@ -139,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlElement.setAttribute('data-bs-theme', 'dark');
             if (toggleButton) {
                 toggleButton.setAttribute('data-bs-theme', 'dark');
+                toggleButton.textContent = '🌙';
             }
             localStorage.setItem('theme', 'dark');
         } else {
@@ -159,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (toggleButton) {
         toggleButton.addEventListener('click', () => {
             const isCurrentlyDark = body.classList.contains('dark-mode');
+            toggleButton.textContent = '☀️'; 
             setTheme(!isCurrentlyDark);
         });
     }

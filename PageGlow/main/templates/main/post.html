@@ -29,40 +29,319 @@
     {%endif%}
     {% endwith %}
     <hr>
-    <p class="com-t"><img width="33" height="33" src="https://img.icons8.com/color/48/comments--v1.png" alt="comments--v1"/>
-        {{post.comments_post.all.count}}
-    </p>
+
+    <button id="like-btn"
+            class="btn {% if post_is_liked %}btn-danger{% else %}btn-submit{% endif %}"
+            data-post-id="{{ object.id }}"
+            data-liked="{{ post_is_liked|yesno:'true,false' }}">
+        {% if post_is_liked %}
+            ❤️  {{ number_of_likes }}
+        {% else %}
+            ❤️ {{ number_of_likes }}
+        {% endif %}
+    </button>
+
+    <button id="favorite-btn"
+            class="btn {% if post_is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}"
+            data-post-id="{{ object.id }}"
+            data-favorited="{{ post_is_favorited|yesno:'true,false' }}">
+        {% if post_is_favorited %}
+            <img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> 
+        {% else %}
+            <img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> 
+        {% endif %}
+    </button>
+
+    
 </article>
 
+<section id="comments-section">
+    <div class="post">
+        <h3>Комментарии {{ object.comments.count }}</h3>
 
-    {% for com in post.comments_post.all %}
-<article class="post">
-    <div class="author">
-        <div class="user-photo">
-            {% if com.author.photo %}
-            <p><img class="user-img-head" src="{{ com.author.photo.url }}">
-            {% else %}
-            <p><img class="user-img-head" src="{{ default_image }}">
-            {% endif %}{{com.author}}
-        </div>
+        <!-- Форма добавления комментария -->
+    
+        <form id="comment-form">
+            {% csrf_token %}
+            <input type="hidden" name="post_id" value="{{ object.id }}">
+            <textarea name="content" id="comment-content" rows="3"
+                    class="form-control mb-2"
+                    placeholder="Напишите комментарий..."></textarea>
+            <button type="submit" class="btn btn-primary">Отправить комментарий</button>
+        </form>
     </div>
-    <div class="comment">
-        {{com.content}}
+    <!-- Список комментариев -->
+    <div id="comments-list">
+        {% for comment in object.comments.all %}
+            <div class="comment mb-3 p-2 border rounded" data-comment-id="{{ comment.id }}">
+                <strong>{{ comment.author.username }}</strong>
+                <small class="text-muted">{{ comment.created_at }}</small>
+                {% if comment.author == user or user.is_staff %}
+                    <button class="delete-comment btn btn-sm btn-danger float-end"
+                    data-comment-id="{{ comment.id }}">Удалить</button>
+        {% endif %}
+                <p>{{ comment.content }}</p>
+            </div>
+        {% endfor %}
     </div>
-    <div class="create_date">
-        {{com.created}}
-    </div>
-</article>
-    {% endfor %}
-<article class="post">
-    <h4>Добавить комментарии</h4>
-    <form action="" method="post">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button class="btn btn-primary">Оставить комментарий</button>
-    </form>
-</article>
+</section>
 
 
 
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const commentForm = document.getElementById('comment-form');
+    const commentsList = document.getElementById('comments-list');
+
+    // Обработчик отправки комментария
+    commentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const content = document.getElementById('comment-content').value.trim();
+        const postId = document.querySelector('input[name="post_id"]').value;
+
+        if (!content) {
+            alert('Текст комментария не может быть пустым');
+            return;
+        }
+
+        // Показываем индикатор загрузки
+        const submitBtn = commentForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Отправка... <span class="spinner-border spinner-border-sm"></span>';
+
+        fetch('{% url "add_comment_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `post_id=${postId}&content=${encodeURIComponent(content)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Отправить комментарий';
+
+            if (data.success) {
+                // Очищаем форму
+                document.getElementById('comment-content').value = '';
+
+                // Добавляем новый комментарий в начало списка
+                const newComment = createCommentElement(data.comment);
+                commentsList.insertBefore(newComment, commentsList.firstChild);
+
+                // Обновляем счётчик комментариев
+                updateCommentsCount(1);
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Отправить комментарий';
+            alert('Произошла ошибка при отправке комментария. Попробуйте ещё раз.');
+        });
+    });
+
+    // Функция для создания элемента комментария
+    function createCommentElement(commentData) {
+        const div = document.createElement('div');
+        div.className = 'comment mb-3 p-2 border rounded';
+        div.setAttribute('data-comment-id', commentData.id);
+
+        div.innerHTML = `
+            <strong>${commentData.author}</strong>
+            <small class="text-muted">${commentData.created_at}</small>
+            <button class="delete-comment btn btn-sm btn-danger float-end"
+                    data-comment-id="${commentData.id}">Удалить</button>
+            <p>${commentData.content}</p>
+        `;
+
+        // Добавляем обработчик удаления к новой кнопке
+        const deleteBtn = div.querySelector('.delete-comment');
+        deleteBtn.addEventListener('click', handleDeleteComment);
+
+        return div;
+    }
+
+    // Обработчик удаления комментария
+    function handleDeleteComment(e) {
+        e.preventDefault(); // Предотвращаем стандартное поведение
+        const commentId = e.target.getAttribute('data-comment-id');
+
+        if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) {
+            return;
+        }
+
+        // Показываем индикатор загрузки
+        const deleteBtn = e.target;
+        const originalText = deleteBtn.textContent;
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = 'Удаление... <span class="spinner-border spinner-border-sm"></span>';
+
+        fetch('{% url "delete_comment_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `comment_id=${commentId}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Удаляем комментарий из DOM
+                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                if (commentElement) {
+                    commentElement.remove();
+                }
+                // Обновляем счётчик комментариев
+                updateCommentsCount(-1);
+                alert('Комментарий удалён');
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при удалении комментария. Попробуйте ещё раз.');
+        })
+        .finally(() => {
+            // Восстанавливаем кнопку
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = originalText;
+        });
+    }
+
+    // Инициализация обработчиков для существующих кнопок
+    document.querySelectorAll('.delete-comment').forEach(btn => {
+        btn.addEventListener('click', handleDeleteComment);
+    });
+
+    // Функция обновления счётчика комментариев
+    function updateCommentsCount(change) {
+        const counterElement = document.querySelector('h3');
+        if (!counterElement) return;
+
+        const match = counterElement.textContent.match(/\((\d+)\)/);
+        if (match) {
+            const currentCount = parseInt(match[1], 10);
+            const newCount = Math.max(0, currentCount + change); // Не допускаем отрицательных значений
+            counterElement.textContent = counterElement.textContent.replace(/\(\d+\)/, `(${newCount})`);
+        }
+    }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeBtn = document.getElementById('like-btn');
+    const favoriteBtn = document.getElementById('favorite-btn');
+
+    // Функция для показа индикатора загрузки
+    function showLoading(button) {
+        button.disabled = true;
+        button.innerHTML += ' <span class="spinner-border spinner-border-sm" role="status"></span>';
+    }
+
+    // Функция для скрытия индикатора загрузки
+    function hideLoading(button, originalHTML) {
+        button.disabled = false;
+        button.innerHTML = originalHTML;
+    }
+
+    // Обработчик для лайка
+    likeBtn.addEventListener('click', function() {
+        const postId = this.getAttribute('data-post-id');
+        const originalHTML = this.innerHTML;
+
+        showLoading(this);
+
+        fetch('{% url "post_like_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `post_id=${postId}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            hideLoading(this, originalHTML);
+            if (data.success) {
+                // Обновляем кнопку
+                if (data.liked) {
+                    this.innerHTML = `❤️ ${data.likes_count}`;
+                    this.className = 'btn btn-danger';
+            this.setAttribute('data-liked', 'true');
+                } else {
+            this.innerHTML = `❤️ ${data.likes_count}`;
+            this.className = 'btn btn-submit';
+            this.setAttribute('data-liked', 'false');
+                }
+            }
+        })
+        .catch(error => {
+            hideLoading(this, originalHTML);
+            console.error('Error:', error);
+            alert('Произошла ошибка при обработке лайка. Попробуйте ещё раз.');
+        });
+    });
+
+    // Обработчик для избранного
+    favoriteBtn.addEventListener('click', function() {
+        const postId = this.getAttribute('data-post-id');
+        const originalHTML = this.innerHTML;
+
+        showLoading(this);
+
+        fetch('{% url "post_favorite_ajax" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `post_id=${postId}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            hideLoading(this, originalHTML);
+            if (data.success) {
+                // Обновляем кнопку
+                if (data.favorited) {
+            this.innerHTML = `<img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> `;
+            this.className = 'btn btn-warning';
+            this.setAttribute('data-favorited', 'true');
+                } else {
+            this.innerHTML = `<img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> `;
+            this.className = 'btn btn-outline-warning';
+            this.setAttribute('data-favorited', 'false');
+                }
+            }
+        })
+        .catch(error => {
+            hideLoading(this, originalHTML);
+            console.error('Error:', error);
+            alert('Произошла ошибка при добавлении в избранное. Попробуйте ещё раз.');
+        });
+    });
+});
+</script>
 {% endblock %}

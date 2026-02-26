@@ -24,7 +24,7 @@ class AddPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = [ 'content', 'is_published', 'cat', 'tags']
+        fields = ['content', 'is_published', 'cat', 'tags']
         widgets = {
             'photo': forms.ClearableFileInput(attrs={'class':'form-control'}),
             'tags': forms.SelectMultiple(attrs={'class':'form-control'}),
@@ -38,14 +38,38 @@ class AddPostForm(forms.ModelForm):
             content = '<h1>Заголовок</h1>' + content
         return content
 
+class PostUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'photo', 'is_published', 'cat', 'tags']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите заголовок'
+            }),
+            'photo': forms.ClearableFileInput(attrs={
+                'class': 'form-control', 'id': 'file',
+            }),
+            'cat': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'tags': forms.SelectMultiple(attrs={
+                'class': 'form-select',
+            }),
+            'is_published':forms.Select(attrs={
+                'class':'form-control'
+            })
+        }
+
 class UploadFileForm(forms.Form):
     file = forms.FileField(label='Файл',widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
 
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = Comments
+        model = Comment
         fields = ['content']
         widgets = {
             'content': forms.Textarea(attrs={'rows': 1, 'class': "form-control",}),
         }
+

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from main.storage import CustomStorage
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -49,6 +50,10 @@ INSTALLED_APPS = [
     'django_ckeditor_5',
     'rest_framework',
     'djoser',
+    'meta',
+
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
 
 MIDDLEWARE = [
@@ -61,6 +66,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+
+SITE_ID = 1
 
 ROOT_URLCONF = 'PageGlow.urls'
 
@@ -217,8 +225,9 @@ customColorPalette = [
     ]
 
 # CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
-CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] 
-
+# CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png', 'jpg'] 
+# CKEDITOR_5_FILE_STORAGE = "main.storage.CustomStorage" 
+# CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
@@ -234,13 +243,10 @@ CKEDITOR_5_CONFIGS = {
             'items': ['heading', '|', 'bold', 'italic', 'link',
                       'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
         },
-        'image': {
-            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignRight', 'imageStyle:alignCenter', '|'],
-        },
         'simpleUpload': {
-            'uploadUrl': '/ckeditor5/image_upload/', 
+            'uploadUrl': '/ckeditor/upload/', 
         },
-        'placeholder': 'Заголовок'
+        'placeholder': 'Заголовок',
     },
     'code_mode': {
         'toolbar': ['codeBlock', '|', 'undo', 'redo'],
@@ -314,6 +320,8 @@ CKEDITOR_5_CONFIGS = {
 
 }
 
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
 # REST_FRAMEWORK = {
 #     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 #     'PAGE_SIZE': 10,
@@ -332,10 +340,6 @@ CKEDITOR_5_CONFIGS = {
 #     )
 # }
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
-
 DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
@@ -344,3 +348,20 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'ACTIVATION_URL': 'auth/verify/{uid}/{token}'
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache'),
+    }
+}
+
+
+META_SITE_PROTOCOL = 'https'
+META_SITE_DOMAIN = 'pageglow.ru'
+META_SITE_TYPE = 'website'
+META_SITE_NAME = 'PageGlow'
+META_INCLUDE_KEYWORDS = ['статьи', 'информация', 'рекомендации', 'руководства']
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_USE_SCHEMAORG_PROPERTIES = True

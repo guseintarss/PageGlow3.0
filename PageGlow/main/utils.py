@@ -1,29 +1,106 @@
+from bs4 import BeautifulSoup
 from PageGlow import settings
+import logging
+
 
 menu = [
     {'title': "Написать статью", 'url_name': 'addpage'},
     {'title': "О сайте", 'url_name': 'about'},
 ]
 
-
+logger = logging.getLogger(__name__)
 
 class DataMixin:
     paginate_by = 20
     title_page = None
     cat_selected = None
-    extra_context = {
-        'default_image': settings.DEFAULT_USER_IMAGE,
-    }
 
-    def __init__(self):
+    def get_extra_context(self):
+        """Возвращает дополнительный контекст с базовыми значениями."""
+        extra = {
+            'default_image': settings.DEFAULT_USER_IMAGE,
+            'menu': menu,  # Добавляем меню в контекст
+        }
+
+        # Устанавливаем заголовок
         if self.title_page:
-            self.extra_context['title'] = self.title_page
+            extra['title'] = self.title_page
+        elif hasattr(self, 'object') and self.object:
+            extra['title'] = getattr(self.object, 'title', 'Без названия')
 
-        if self.cat_selected is not None:
-            self.extra_context['cat_selected'] = self.cat_selected
+        cat_selected = getattr(self, 'cat_selected', None)
+        if cat_selected is not None:
+            extra['cat_selected'] = cat_selected
 
+        return extra
 
     def get_mixin_context(self, context, **kwargs):
-        context['cat_selected'] = None
+        """Добавляет метаданные и другой контекст в словарь контекста."""
+        context.update(self.get_extra_context())
+
+        # Добавляем meta-теги, если объект поддерживает as_meta
+        if hasattr(self, 'object') and self.object and hasattr(self.object, 'as_meta'):
+            try:
+                if hasattr(self, 'request'):
+                    context['meta'] = self.object.as_meta(self.request)
+                else:
+                    from meta.views import Meta
+                description = str(getattr(self.object, 'content', ''))[:200]
+                context['meta'] = Meta(
+                    title=getattr(self.object, 'title', 'Без названия'),
+                    description=description,
+                )
+            except Exception as e:
+                logger.warning(f"Ошибка генерации meta-тегов: {e}")
+                context['meta'] = None
+        else:
+            context['meta'] = None
+
         context.update(kwargs)
         return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) if hasattr(super(), 'get_context_data') else kwargs.copy()
+
+        # Инициализируем значения по умолчанию
+        context['post_is_liked'] = False
+        context['post_is_favorited'] = False
+        context['number_of_likes'] = 0
+        context['number_of_favorites'] = 0
+        context['comments'] = []
+
+        # Заполняем данные только если объект существует
+        if hasattr(self, 'object') and self.object:
+            if self.request.user.is_authenticated:
+                context['post_is_liked'] = self.object.likes.filter(id=self.request.user.id).exists()
+                context['post_is_favorited'] = self.object.favorites.filter(id=self.request.user.id).exists()
+
+            context['number_of_likes'] = self.object.number_of_likes()
+            context['number_of_favorites'] = self.object.number_of_favorites()
+            context['comments'] = self.object.comments.filter(is_active=True)
+
+        return self.get_mixin_context(context, **kwargs)
+
+
+# def extract_title_from_content(html_content):
+#     """Извлекает текст из первого тега <h1> в HTML‑контенте."""
+#     soup = BeautifulSoup(html_content, 'html.parser')
+#     h1_tag = soup.find('h1')
+#     if h1_tag and h1_tag.get_text(strip=True):
+#         return h1_tag.get_text(strip=True)
+#     return ''
+
+# def insert_title_into_content(title, html_content):
+#     """Вставляет заголовок как <h1> в начало контента, заменяя существующий <h1>, если есть."""
+#     soup = BeautifulSoup(html_content, 'html.parser')
+#     h1_tag = soup.find('h1')
+
+#     if h1_tag:
+#         h1_tag.string = title
+#     else:
+#         # Создаём новый тег h1 и вставляем в начало
+#         new_h1 = soup.new_tag('h1')
+#         new_h1.string = title
+#         soup.insert(0, new_h1)
+
+#     return str(soup)
