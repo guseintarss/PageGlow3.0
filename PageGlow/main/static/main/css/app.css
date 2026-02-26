@@ -24,7 +24,7 @@
   --dark-primary: #299cf5;
   --dark-primary-700: #0e62a7;
   --dark-shadow: 0 2px 10px rgba(68, 68, 68, 0.1);
-  --dark-tags-bg : #52526e;
+  --dark-tags-bg : #33333d;
   --dark-tags-color: #a59eff;
 
   --ck-color-base-background: var(--obs-surface); /* фон редактора */
@@ -250,6 +250,9 @@ a:hover{ text-decoration: underline; }
   align-items: center;
   gap: 10px;
   margin-left: auto;
+}
+.nav-item a{
+  text-decoration: none;
 }
 .user-avatar{
   width: 34px;
