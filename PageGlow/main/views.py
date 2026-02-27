@@ -33,7 +33,7 @@ from PageGlow import settings
 from main import serializers
 from main.serializers import PostSerializer
 from .forms import AddPostForm, PostUpdateForm, UploadFileForm, CommentForm
-from .models import Post, Category, TagPost, UploadFiles, Comment
+from .models import Post, Category, TagPost, UploadFiles, Comment, Subscription, Notification
 from .utils import DataMixin
 
 
@@ -91,6 +91,14 @@ class ShowPost(FormMixin, DataMixin, DetailView):
 
     def get_object(self, queryset=None):
         post = get_object_or_404(Post.published, slug=self.kwargs[self.slug_url_kwarg])
+        
+        # Увеличиваем счётчик просмотров
+        session_key = f'viewed_post_{post.id}'
+        if not self.request.session.get(session_key, False):
+            post.views += 1
+            post.save(update_fields=['views'])
+            self.request.session[session_key] = True
+        
         allowed_tags = [
             'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
             'ul', 'ol', 'li', 'strong', 'em', 'a', 'img',
@@ -110,6 +118,20 @@ class ShowPost(FormMixin, DataMixin, DetailView):
 
         post.content = clean(post.content, tags=allowed_tags, attributes=allowed_attributes)
         return post
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = self.object
+        context['similar_posts'] = post.get_similar_posts()
+        context['reading_time'] = post.reading_time()
+        
+        # Проверяем подписку на автора
+        if self.request.user.is_authenticated and post.author:
+            context['is_subscribed'] = Subscription.objects.filter(
+                subscriber=self.request.user, 
+                author=post.author
+            ).exists()
+        return context
 
 
 @login_required
@@ -244,13 +266,20 @@ class PostLikeAjaxView(View):
         post = get_object_or_404(Post, id=post_id)
 
         if post.likes.filter(id=request.user.id).exists():
-            # Убираем лайк
             post.likes.remove(request.user)
             liked = False
         else:
-            # Добавляем лайк
             post.likes.add(request.user)
             liked = True
+            # Уведомление автору о лайке
+            if post.author and post.author != request.user:
+                Notification.objects.create(
+                    recipient=post.author,
+                    sender=request.user,
+                    notification_type='like',
+                    post=post,
+                    message=f'{request.user.username} оценил вашу статью "{post.title[:30]}..."'
+                )
 
         data = {
             'success': True,
@@ -291,17 +320,27 @@ class AddCommentAjaxView(View):
             if not content or len(content.strip()) == 0:
                 return JsonResponse({
                     'success': False,
-            'error': 'Текст комментария не может быть пустым'
-        }, status=400)
+                    'error': 'Текст комментария не может быть пустым'
+                }, status=400)
 
             post = get_object_or_404(Post, id=post_id)
 
-            # Создаём комментарий
             comment = Comment.objects.create(
                 post=post,
                 author=request.user,
                 content=content
             )
+            
+            # Уведомление автору статьи о комментарии
+            if post.author and post.author != request.user:
+                Notification.objects.create(
+                    recipient=post.author,
+                    sender=request.user,
+                    notification_type='comment',
+                    post=post,
+                    comment=comment,
+                    message=f'{request.user.username} прокомментировал "{post.title[:30]}..."'
+                )
 
             data = {
                 'success': True,
@@ -309,8 +348,8 @@ class AddCommentAjaxView(View):
                     'id': comment.id,
                     'content': comment.content,
                     'author': comment.author.username,
-            'created_at': comment.created_at.strftime('%d.%m.%Y %H:%M'),
-            'is_active': comment.is_active
+                    'created_at': comment.created_at.strftime('%d.%m.%Y %H:%M'),
+                    'is_active': comment.is_active
                 }
             }
             return JsonResponse(data)
@@ -378,3 +417,100 @@ class CKEditorUploadView(View):
         return JsonResponse({
             'url': file_url
         })
+
+
+class PopularPostsView(DataMixin, ListView):
+    """Популярные статьи"""
+    template_name = 'main/index.html'
+    context_object_name = 'posts'
+    title_page = 'Популярное'
+
+    def get_queryset(self):
+        return Post.published.all().order_by('-views')[:20]
+
+
+@method_decorator(login_required, name='dispatch')
+class SubscribeAuthorView(View):
+    """Подписка/отписка от автора"""
+    def post(self, request, *args, **kwargs):
+        from users.models import User
+        author_id = request.POST.get('author_id')
+        author = get_object_or_404(User, id=author_id, is_active=True)
+        
+        if author == request.user:
+            return JsonResponse({'success': False, 'error': 'Нельзя подписаться на себя'}, status=400)
+        
+        subscription, created = Subscription.objects.get_or_create(
+            subscriber=request.user,
+            author=author
+        )
+        
+        if not created:
+            subscription.delete()
+            subscribed = False
+        else:
+            subscribed = True
+            # Создаём уведомление для автора
+            Notification.objects.create(
+                recipient=author,
+                sender=request.user,
+                notification_type='follow',
+                message=f'{request.user.username} подписался на вас'
+            )
+        
+        subscribers_count = Subscription.objects.filter(author=author).count()
+        
+        return JsonResponse({
+            'success': True,
+            'subscribed': subscribed,
+            'subscribers_count': subscribers_count
+        })
+
+
+class SubscriptionFeedView(LoginRequiredMixin, DataMixin, ListView):
+    """Лента подписок"""
+    template_name = 'main/index.html'
+    context_object_name = 'posts'
+    title_page = 'Мои подписки'
+
+    def get_queryset(self):
+        subscribed_authors = Subscription.objects.filter(
+            subscriber=self.request.user
+        ).values_list('author_id', flat=True)
+        return Post.published.filter(author_id__in=subscribed_authors).order_by('-time_create')
+
+
+@method_decorator(login_required, name='dispatch')
+class NotificationsView(View):
+    """Получение уведомлений"""
+    def get(self, request, *args, **kwargs):
+        notifications = Notification.objects.filter(
+            recipient=request.user
+        ).order_by('-created_at')[:20]
+        
+        unread_count = notifications.filter(is_read=False).count()
+        
+        data = {
+            'unread_count': unread_count,
+            'notifications': [
+                {
+                    'id': n.id,
+                    'type': n.notification_type,
+                    'message': n.message,
+                    'is_read': n.is_read,
+                    'created_at': n.created_at.strftime('%d.%m.%Y %H:%M'),
+                    'post_url': n.post.get_absolute_url() if n.post else None,
+                    'sender_username': n.sender.username if n.sender else None,
+                }
+                for n in notifications
+            ]
+        }
+        return JsonResponse(data)
+
+
+@method_decorator(login_required, name='dispatch')
+class MarkNotificationsReadView(View):
+    """Пометить уведомления как прочитанные"""
+    def post(self, request, *args, **kwargs):
+        Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({'success': True})

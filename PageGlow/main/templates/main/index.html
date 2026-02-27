@@ -21,7 +21,7 @@
         </div>
         <div>
             <h2>{{ p.title }}</h2>
-            <p class="meta">Категория: {{p.cat.name}} &bull; Дата: {{p.time_update|date:"d.m.Y"}}</p>
+            <p class="meta">Категория: {{ p.cat.name }} &bull; {{ p.time_update|date:"d.m.Y" }} &bull; 👁 {{ p.views }}</p>
             {% if p.photo %}
                 <p><img class="img-article-left thumb" src="{{p.photo.url}}" alt=""></p>
             {% endif %}

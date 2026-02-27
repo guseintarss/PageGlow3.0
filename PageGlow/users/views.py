@@ -150,9 +150,17 @@ class UserPasswordChange(PasswordChangeView):
 
 def author_profile(request, username):
     """Публичный профиль автора - только просмотр статей"""
+    from main.models import Subscription
+    
     author = get_object_or_404(User, username=username, is_active=True)
     
     published_posts = Post.published.filter(author=author).order_by('-time_create')
+    subscribers_count = Subscription.objects.filter(author=author).count()
+    subscriptions_count = Subscription.objects.filter(subscriber=author).count()
+    
+    is_subscribed = False
+    if request.user.is_authenticated and request.user != author:
+        is_subscribed = Subscription.objects.filter(subscriber=request.user, author=author).exists()
     
     extra_context = {
         'title': f'Профиль {author.username}',
@@ -160,6 +168,9 @@ def author_profile(request, username):
         'default_image': settings.DEFAULT_USER_IMAGE,
         'published_posts': published_posts,
         'is_own_profile': request.user == author if request.user.is_authenticated else False,
+        'subscribers_count': subscribers_count,
+        'subscriptions_count': subscriptions_count,
+        'is_subscribed': is_subscribed,
     }
     return render(request, 'users/author_profile.html', extra_context)
 

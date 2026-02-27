@@ -44,18 +44,37 @@ class Post(ModelMeta, models.Model):
         blank=True
     )
 
-    # Избранные
+    # Избранное
     favorites = models.ManyToManyField(
         User,
         related_name='favorite_posts',
         blank=True
     )
 
+    # Просмотры
+    views = models.PositiveIntegerField(default=0, verbose_name='Просмотры')
+
     def number_of_likes(self):
         return self.likes.count()
 
     def number_of_favorites(self):
         return self.favorites.count()
+
+    def reading_time(self):
+        """Расчёт времени чтения (средняя скорость 200 слов/мин)"""
+        import re
+        text = re.sub(r'<[^>]+>', '', self.content or '')
+        word_count = len(text.split())
+        minutes = max(1, round(word_count / 200))
+        return minutes
+
+    def get_similar_posts(self, limit=4):
+        """Получить похожие статьи по тегам и категории"""
+        post_tags_ids = self.tags.values_list('id', flat=True)
+        similar_posts = Post.published.filter(
+            models.Q(tags__in=post_tags_ids) | models.Q(cat=self.cat)
+        ).exclude(id=self.id).distinct()
+        return similar_posts.order_by('-views', '-time_create')[:limit]
     
 
     objects = models.Manager()
@@ -154,4 +173,45 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment by {self.author} on {self.post}'
+
+
+class Subscription(models.Model):
+    """Подписки на авторов"""
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscribers')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('subscriber', 'author')
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
+    def __str__(self):
+        return f'{self.subscriber} подписан на {self.author}'
+
+
+class Notification(models.Model):
+    """Уведомления"""
+    class NotificationType(models.TextChoices):
+        LIKE = 'like', 'Лайк'
+        COMMENT = 'comment', 'Комментарий'
+        FOLLOW = 'follow', 'Подписка'
+        NEW_POST = 'new_post', 'Новая статья'
+
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_notifications', null=True)
+    notification_type = models.CharField(max_length=20, choices=NotificationType.choices)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Уведомление'
+        verbose_name_plural = 'Уведомления'
+
+    def __str__(self):
+        return f'{self.notification_type}: {self.message}'
 
