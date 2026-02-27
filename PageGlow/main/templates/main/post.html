@@ -4,8 +4,12 @@
 {% block content %}
 <article class="post">
     <div class="post-content">
-    <h1>{{post.title}}</h1>
-    <p class="meta">Категория: {{post.cat.name}} &bull; Дата: {{post.time_update|date:"d.m.Y"}}</p>
+    <h1>{{ post.title }}</h1>
+    <p class="meta">
+        Автор: <a href="{% url 'users:author_profile' post.author.username %}">{{ post.author.username }}</a>
+        &bull; Категория: {{ post.cat.name }}
+        &bull; Дата: {{ post.time_update|date:"d.m.Y" }}
+    </p>
 
 
         {% if post.photo %}

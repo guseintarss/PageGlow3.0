@@ -29,6 +29,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static('/ckeditor5/', document_root=settings.BASE_DIR / 'ckeditor5')
 
 handler404 = page_not_found
 

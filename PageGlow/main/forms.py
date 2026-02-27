@@ -14,7 +14,7 @@ class AddPostForm(forms.ModelForm):
     )
     content = forms.CharField(
         label='Статья',
-        widget=CKEditor5Widget(config_name='default'),
+        widget=CKEditor5Widget(config_name='extends'),
         initial='<h1></h1>'
     )
 

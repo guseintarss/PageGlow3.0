@@ -20,6 +20,7 @@ urlpatterns = [
     path('user/<int:user_id>/toggle-active/', views.delete_user, name='delete_user'),
     path('', include(router.urls)),
     path('profile/', views.profile_user, name='profile'),
+    path('author/<str:username>/', views.author_profile, name='author_profile'),
     path('articles/<slug:slug>/delete/', PostDeleteView.as_view(), name='article-delete'),
     path('edit_profile/', views.EditProfileUser.as_view(), name='edit_profile'),
 

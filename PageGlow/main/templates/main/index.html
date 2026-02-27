@@ -17,7 +17,7 @@
             {% else %}
             <img class="user-avatar" src="{{ default_image }}">
             {% endif %}
-            <a href="{% url 'users:profile' %}" class="user-username">{{p.author.username|default:'Неизвестно'}}</a>
+            <a href="{% url 'users:author_profile' p.author.username %}" class="user-username">{{ p.author.username|default:'Неизвестно' }}</a>
         </div>
         <div>
             <h2>{{ p.title }}</h2>

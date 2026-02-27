@@ -148,6 +148,22 @@ class UserPasswordChange(PasswordChangeView):
     template_name = 'users/password_change_form.html'
 
 
+def author_profile(request, username):
+    """Публичный профиль автора - только просмотр статей"""
+    author = get_object_or_404(User, username=username, is_active=True)
+    
+    published_posts = Post.published.filter(author=author).order_by('-time_create')
+    
+    extra_context = {
+        'title': f'Профиль {author.username}',
+        'author': author,
+        'default_image': settings.DEFAULT_USER_IMAGE,
+        'published_posts': published_posts,
+        'is_own_profile': request.user == author if request.user.is_authenticated else False,
+    }
+    return render(request, 'users/author_profile.html', extra_context)
+
+
 # def deactivate_user(request):
 #     user = User.objects.get(id=request.user.id)
 #     user.is_active=False

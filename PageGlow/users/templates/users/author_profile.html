@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="post">
+    <div class="user-photo">
+        {% if author.photo %}
+        <p><img class="user-img-article" src="{{ author.photo.url }}">
+        {% else %}
+        <p><img class="user-img-article" src="{{ default_image }}">
+        {% endif %}
+    </div>
+
+    <h1>{{ author.username }}</h1>
+    {% if author.first_name or author.last_name %}
+    <p><span class="span">{{ author.last_name }} {{ author.first_name }}</span></p>
+    {% endif %}
+      
+    {% if author.about_me %}
+    <p>{{ author.about_me }}</p>
+    {% endif %}
+
+    {% if is_own_profile %}
+    <a class="btn btn-primary" href="{% url 'users:edit_profile' %}">Редактировать профиль</a>
+    {% endif %}
+</div>
+
+<div class="post">
+    <h4>Статьи автора {{ author.username }}</h4>
+</div>
+
+{% for post in published_posts %}
+<article class="post">
+    <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+    <p class="meta">Категория: {{ post.cat.name }} &bull; Дата: {{ post.time_update|date:"d.m.Y" }}</p>
+    {% if post.photo %}
+    <p><img class="img-article-left thumb" src="{{ post.photo.url }}" alt=""></p>
+    {% endif %}
+    {% autoescape off %}
+    <p class="meta">{{ post.meta }}</p>
+    {{ post.content|truncatewords:20|safe }}
+    {% endautoescape %}
+    <p><a class="read-more" href="{{ post.get_absolute_url }}">Читать далее→</a></p>
+</article>
+{% empty %}
+<div class="post">
+    <p>У автора пока нет опубликованных статей.</p>
+</div>
+{% endfor %}
+{% endblock %}

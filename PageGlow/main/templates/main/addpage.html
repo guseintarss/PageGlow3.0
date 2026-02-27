@@ -26,100 +26,24 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-</script>
-<script>
-  ClassicEditor
-    .create(document.querySelector('#id_content'))
-    .then(editor => {
-        editor.model.change(writer => {
-            const paragraph = editor.model.document.getRoot().firstChild;
-            if (paragraph && paragraph.name === 'paragraph') {
-                // Преобразуем первый абзац в заголовок (например, H2)
-                writer.setElementAttribute(paragraph, 'heading', 'heading2');
-            }
-        });
-    })
-    .catch(error => {
-        console.error(error);
-    });
-
-</script>
+{{ form.media }}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const editorElement = document.querySelector('#id_content');
-  if (editorElement) {
-    ClassicEditor
-      .then(editor => {
-        // Если это новая статья и контент пустой, добавляем placeholder с заголовком
-        if (!editor.getData()) {
-          editor.setData('<h1>Введите заголовок статьи</h1><p>Начните писать статью...</p>');
-        }
-
-        // При изменении контента отслеживаем изменения в <h1>
-        editor.model.document.on('change:data', () => {
-          const data = editor.getData();
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(data, 'text/html');
-          const h1 = doc.querySelector('h1');
-
-          // Обновляем заголовок страницы, если он изменился
-          const pageTitle = document.querySelector('h2');
-          if (h1 && pageTitle) {
-            const newTitle = h1.textContent.trim();
-            if (newTitle) {
-              pageTitle.textContent = `Редактирование статьи: ${newTitle}`;
+    function toggleCKEditorTheme() {
+        const editorElement = document.querySelector('.ck');
+        if (editorElement) {
+            if (document.documentElement.classList.contains('dark-mode')) {
+                editorElement.classList.add('dark-mode');
+            } else {
+                editorElement.classList.remove('dark-mode');
             }
-          }
-        });
-      })
-      .catch(error => {
-        console.error('CKEditor error:', error);
-      });
-  }
-});
-</script>
-<!-- <script>
-  ClassicEditor
-  .create(document.querySelector('#your-textarea-id'), {
-    // настройки
-  })
-  .catch(error => {
-    console.error(error); // проверьте консоль на ошибки
-  });
-</script> -->
-<script>
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
-ClassicEditor
-  .create(document.querySelector('#editor'))
-  .catch(error => {
-    console.error(error);
-  });
-
-
-function toggleCKEditorTheme() {
-  const editorElement = document.querySelector('.ck');
-  
-  if (editorElement) {
-    if (document.documentElement.classList.contains('dark-mode')) {
-      editorElement.classList.add('dark-mode');
-    } else {
-      editorElement.classList.remove('dark-mode');
+        }
     }
-  }
-}
-
-// Добавляем обработчик для изменения системной темы
-window.matchMedia('(prefers-color-scheme: dark)')
-  .addEventListener('change', toggleCKEditorTheme);
-
-// Вызываем при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-  toggleCKEditorTheme();
+    
+    setTimeout(toggleCKEditorTheme, 500);
+    
+    window.matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', toggleCKEditorTheme);
 });
-
 </script>
-<script src="https://cdn.ckeditor.com/ckeditor5/34.0.1/classic/ckeditor.js"></script>
-{{ form.media }}
 {% endblock %}

@@ -31,7 +31,6 @@ from django.core.files.storage import FileSystemStorage
 
 from PageGlow import settings
 from main import serializers
-from PageGlow.settings import CKEDITOR_UPLOAD_PATH
 from main.serializers import PostSerializer
 from .forms import AddPostForm, PostUpdateForm, UploadFileForm, CommentForm
 from .models import Post, Category, TagPost, UploadFiles, Comment
@@ -95,10 +94,21 @@ class ShowPost(FormMixin, DataMixin, DetailView):
         allowed_tags = [
             'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
             'ul', 'ol', 'li', 'strong', 'em', 'a', 'img',
-            'blockquote', 'code', 'pre', 'i', 'span', 'u', 'br', 'figure',
+            'blockquote', 'code', 'pre', 'i', 'span', 'u', 'br', 
+            'figure', 'figcaption', 'picture', 'source',
+            'table', 'thead', 'tbody', 'tr', 'th', 'td',
         ]
+        allowed_attributes = {
+            '*': ['class', 'style'],
+            'a': ['href', 'title', 'target', 'rel'],
+            'img': ['src', 'alt', 'width', 'height', 'loading'],
+            'figure': ['class'],
+            'source': ['srcset', 'type', 'media'],
+            'td': ['colspan', 'rowspan'],
+            'th': ['colspan', 'rowspan'],
+        }
 
-        post.content = clean(post.content, tags=allowed_tags)
+        post.content = clean(post.content, tags=allowed_tags, attributes=allowed_attributes)
         return post
 
 
@@ -338,17 +348,33 @@ class DeleteCommentAjaxView(View):
 #     post.save()
 #     return redirect('profile')
 
+@method_decorator(login_required, name='dispatch')
 class CKEditorUploadView(View):
     def post(self, request):
         file = request.FILES.get('upload')
-        if file:
-            if file.size > 10 * 1024 * 1024:  
-                return JsonResponse({'uploaded': False, 'error': 'Файл слишком большой'}, status=400)
-            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, CKEDITOR_UPLOAD_PATH))
-            filename = fs.save(file.name, file)
-            file_url = fs.url(filename)
+        if not file:
             return JsonResponse({
-                'uploaded': True,
-                'url': file_url
-            })
-        return JsonResponse({'uploaded': False}, status=403)
+                'error': {'message': 'Файл не найден'}
+            }, status=400)
+
+        if file.size > 100 * 1024 * 1024:
+            return JsonResponse({
+                'error': {'message': 'Файл слишком большой (макс. 100 МБ)'}
+            }, status=400)
+
+        allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        if file.content_type not in allowed_types:
+            return JsonResponse({
+                'error': {'message': 'Недопустимый тип файла. Разрешены: JPEG, PNG, GIF, WebP'}
+            }, status=400)
+
+        upload_path = os.path.join(settings.MEDIA_ROOT, 'uploads')
+        os.makedirs(upload_path, exist_ok=True)
+        
+        fs = FileSystemStorage(location=upload_path)
+        filename = fs.save(file.name, file)
+        file_url = f"{settings.MEDIA_URL}uploads/{filename}"
+
+        return JsonResponse({
+            'url': file_url
+        })

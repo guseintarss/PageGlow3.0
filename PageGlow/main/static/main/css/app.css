@@ -106,6 +106,41 @@
   color: var(--primary);
 }
 
+/* Стили для изображений внутри редактора CKEditor */
+.ck-content img,
+.ck-editor__editable img,
+.ck.ck-editor__editable img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+.ck-content figure.image,
+.ck-editor__editable figure.image {
+  margin: 15px 0;
+  display: table;
+  max-width: 100%;
+}
+
+.ck-content figure.image img,
+.ck-editor__editable figure.image img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ck-content figure.image > figcaption,
+.ck-editor__editable figure.image > figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 5px;
+  text-align: center;
+}
+
 /* Стили для модальных окон */
 .ck-dialog {
   background: var(--obs-surface);
@@ -468,6 +503,53 @@ a:hover{ text-decoration: underline; }
 .img-article, .img-article-left{
   border-radius: 12px;
   border: 1px solid var(--border);
+}
+
+/* Стили для изображений в контенте поста (CKEditor) */
+.post-content figure.image {
+  margin: 20px 0;
+  text-align: center;
+}
+.post-content figure.image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.post-content figure.image figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.post-content figure.image-style-side {
+  float: right;
+  margin: 0 0 15px 20px;
+  max-width: 50%;
+}
+.post-content figure.image-style-align-left {
+  float: left;
+  margin: 0 20px 15px 0;
+  max-width: 50%;
+}
+.post-content figure.image-style-align-right {
+  float: right;
+  margin: 0 0 15px 20px;
+  max-width: 50%;
+}
+.post-content figure.image-style-align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.post-content::after {
+  content: "";
+  display: table;
+  clear: both;
 }
 
 

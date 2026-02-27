@@ -20,6 +20,6 @@ urlpatterns = [
     path('ajax/favorite/', views.PostFavoriteAjaxView.as_view(), name='post_favorite_ajax'),
     path('ajax/add-comment/', views.AddCommentAjaxView.as_view(), name='add_comment_ajax'),
     path('ajax/delete-comment/', views.DeleteCommentAjaxView.as_view(), name='delete_comment_ajax'),
-    path('ckeditor/upload/', views.CKEditorUploadView.as_view(), name='ckeditor_upload'),    
+    path('upload/', views.CKEditorUploadView.as_view(), name='ckeditor_upload'),    
 ]
 
