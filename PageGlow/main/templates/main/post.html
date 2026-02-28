@@ -1,66 +1,131 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
+<!-- Прогресс чтения -->
+<!-- <div class="reading-progress-bar" id="reading-progress"></div> -->
+<div id="reading-progress" style="position: fixed; top: 0; left: 0; height: 3px; background: #007bff; width: 0%;"></div>
+
 <article class="post">
     <div class="post-content">
-    <h1>{{post.title}}</h1>
-    <p class="meta">Категория: {{post.cat.name}} &bull; Дата: {{post.time_update|date:"d.m.Y"}}</p>
-
+        
+        <div class="post-meta-header">
+            <div class="author-info">
+                {% if post.author.photo %}
+                <img class="author-avatar" src="{{ post.author.photo.url }}" alt="{{ post.author.username }}">
+                {% else %}
+                <img class="author-avatar" src="{{ default_image }}" alt="{{ post.author.username }}">
+                {% endif %}
+                <div class="author-details">
+                    <a href="{% url 'users:author_profile' post.author.username %}" class="author-name">{{ post.author.username }}</a>
+                    <span class="post-date">{{ post.time_update|date:"d.m.Y" }}</span>
+                </div>
+            </div>
+            {% if user.is_authenticated and post.author != user %}
+            <button id="subscribe-btn" 
+                    class="btn btn-sm {% if is_subscribed %}btn-secondary{% else %}btn-primary{% endif %}"
+                    data-author-id="{{ post.author.id }}">
+                {% if is_subscribed %}Отписаться{% else %}Подписаться{% endif %}
+            </button>
+            {% endif %}
+        </div>
+        <h1>{{ post.title }}</h1>
+        <p class="meta">
+            Категория: <a href="{{ post.cat.get_absolute_url }}">{{ post.cat.name }}</a>
+            &bull; {{ reading_time }} мин чтения
+            &bull; {{ post.views }} просмотров
+        </p>
 
         {% if post.photo %}
-        <p><img class="img-article" src="{{post.photo.url}}"></p>
+        <p><img class="img-article" src="{{ post.photo.url }}"></p>
         {% endif %}
 
         {% autoescape off %}
-        {{post.content|safe}}
+        {{ post.content|safe }}
         {% endautoescape %}
     </div>
-
 
     {% with post.tags.all as tags %}
     {% if tags %}
     <p class="t-title">Теги:</p>
     <ul class="tags-list">
         {% for t in tags %}
-        <li><a class="tag" href="{{t.get_absolute_url}}">{{t.tag}}</a></li>
+        <li><a class="tag" href="{{ t.get_absolute_url }}">{{ t.tag }}</a></li>
         {% endfor %}
     </ul>
-    {%endif%}
+    {% endif %}
     {% endwith %}
+    
     <hr>
 
-    <button id="like-btn"
-            class="btn {% if post_is_liked %}btn-danger{% else %}btn-submit{% endif %}"
-            data-post-id="{{ object.id }}"
-            data-liked="{{ post_is_liked|yesno:'true,false' }}">
-        {% if post_is_liked %}
-            ❤️  {{ number_of_likes }}
-        {% else %}
+    <!-- Кнопки действий -->
+    <div class="post-actions">
+        <button id="like-btn"
+                class="btn {% if post_is_liked %}btn-danger{% else %}btn-outline-danger{% endif %}"
+                data-post-id="{{ object.id }}"
+                data-liked="{{ post_is_liked|yesno:'true,false' }}">
             ❤️ {{ number_of_likes }}
-        {% endif %}
-    </button>
+        </button>
 
-    <button id="favorite-btn"
-            class="btn {% if post_is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}"
-            data-post-id="{{ object.id }}"
-            data-favorited="{{ post_is_favorited|yesno:'true,false' }}">
-        {% if post_is_favorited %}
-            <img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> 
-        {% else %}
-            <img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> 
-        {% endif %}
-    </button>
+        <button id="favorite-btn"
+                class="btn {% if post_is_favorited %}btn-warning{% else %}btn-outline-warning{% endif %}"
+                data-post-id="{{ object.id }}"
+                data-favorited="{{ post_is_favorited|yesno:'true,false' }}">
+            🔖
+        </button>
 
-    
+        <!-- Кнопки "Поделиться" -->
+        <div class="share-buttons">
+            <span class="share-label">Поделиться:</span>
+            <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text={{ post.title|urlencode }}" 
+               target="_blank" class="btn btn-sm btn-outline-primary share-btn" title="Telegram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                </svg>
+            </a>
+            <a href="https://vk.com/share.php?url={{ request.build_absolute_uri }}&title={{ post.title|urlencode }}" 
+               target="_blank" class="btn btn-sm btn-outline-primary share-btn" title="VK">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.12-5.339-3.202-2.17-3.047-2.763-5.339-2.763-5.805 0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.678.864 2.508 2.305 4.708 2.897 4.708.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.814-.542 1.253-1.406 2.15-3.574 2.15-3.574.119-.254.305-.491.745-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z"/>
+                </svg>
+            </a>
+            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title|urlencode }}" 
+               target="_blank" class="btn btn-sm btn-outline-primary share-btn" title="Twitter">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+            </a>
+            <button class="btn btn-sm btn-outline-secondary share-btn" onclick="copyLink()" title="Копировать ссылку">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
 </article>
+
+<!-- Похожие статьи -->
+{% if similar_posts %}
+<div class="post">
+    <h3>Похожие статьи</h3>
+    <div class="similar-posts">
+        {% for p in similar_posts %}
+        <div class="similar-post-card">
+            {% if p.photo %}
+            <img src="{{ p.photo.url }}" alt="{{ p.title }}" class="similar-post-img">
+            {% endif %}
+            <div class="similar-post-content">
+                <a href="{{ p.get_absolute_url }}" class="similar-post-title">{{ p.title }}</a>
+                <span class="similar-post-meta">{{ p.views }} просмотров</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 
 <section id="comments-section">
     <div class="post">
         <h3>Комментарии {{ object.comments.count }}</h3>
-
-        <!-- Форма добавления комментария -->
-    
         <form id="comment-form">
             {% csrf_token %}
             <input type="hidden" name="post_id" value="{{ object.id }}">
@@ -70,32 +135,86 @@
             <button type="submit" class="btn btn-primary">Отправить комментарий</button>
         </form>
     </div>
-    <!-- Список комментариев -->
     <div id="comments-list">
         {% for comment in object.comments.all %}
-            <div class="comment mb-3 p-2 border rounded" data-comment-id="{{ comment.id }}">
-                <strong>{{ comment.author.username }}</strong>
-                <small class="text-muted">{{ comment.created_at }}</small>
-                {% if comment.author == user or user.is_staff %}
-                    <button class="delete-comment btn btn-sm btn-danger float-end"
+        <div class="comment mb-3 p-2 border rounded" data-comment-id="{{ comment.id }}">
+            <strong>{{ comment.author.username }}</strong>
+            <small class="text-muted">{{ comment.created_at }}</small>
+            {% if comment.author == user or user.is_staff %}
+            <button class="delete-comment btn btn-sm btn-danger float-end"
                     data-comment-id="{{ comment.id }}">Удалить</button>
-        {% endif %}
-                <p>{{ comment.content }}</p>
-            </div>
+            {% endif %}
+            <p>{{ comment.content }}</p>
+        </div>
         {% endfor %}
     </div>
 </section>
 
-
-
 {% endblock %}
+
 {% block extra_js %}
 <script>
+// Прогресс чтения
+window.addEventListener('scroll', function() {
+    const article = document.querySelector('article.post');
+    const progressBar = document.getElementById('reading-progress');
+    
+    if (article && progressBar) {
+        const articleTop = article.offsetTop;
+        const articleHeight = article.offsetHeight;
+        const windowHeight = window.innerHeight;
+        const scrolled = window.scrollY;
+        
+        const progress = Math.min(100, Math.max(0, 
+            ((scrolled - articleTop + windowHeight) / articleHeight) * 100
+        ));
+        
+        progressBar.style.width = progress + '%';
+    }
+});
+
+// Копирование ссылки
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        alert('Ссылка скопирована!');
+    });
+}
+
+// Подписка на автора
 document.addEventListener('DOMContentLoaded', function() {
+    const subscribeBtn = document.getElementById('subscribe-btn');
+    if (subscribeBtn) {
+        subscribeBtn.addEventListener('click', function() {
+            const authorId = this.getAttribute('data-author-id');
+            const btn = this;
+            
+            fetch('{% url "subscribe_author" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `author_id=${authorId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.subscribed) {
+                        btn.textContent = 'Отписаться';
+                        btn.className = 'btn btn-sm btn-secondary';
+                    } else {
+                        btn.textContent = 'Подписаться';
+                        btn.className = 'btn btn-sm btn-primary';
+                    }
+                }
+            });
+        });
+    }
+
+    // Комментарии
     const commentForm = document.getElementById('comment-form');
     const commentsList = document.getElementById('comments-list');
 
-    // Обработчик отправки комментария
     commentForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const content = document.getElementById('comment-content').value.trim();
@@ -106,10 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Показываем индикатор загрузки
         const submitBtn = commentForm.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Отправка... <span class="spinner-border spinner-border-sm"></span>';
+        submitBtn.innerHTML = 'Отправка...';
 
         fetch('{% url "add_comment_ajax" %}', {
             method: 'POST',
@@ -125,33 +243,24 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.textContent = 'Отправить комментарий';
 
             if (data.success) {
-                // Очищаем форму
                 document.getElementById('comment-content').value = '';
-
-                // Добавляем новый комментарий в начало списка
                 const newComment = createCommentElement(data.comment);
                 commentsList.insertBefore(newComment, commentsList.firstChild);
-
-                // Обновляем счётчик комментариев
-                updateCommentsCount(1);
             } else {
                 alert('Ошибка: ' + data.error);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             submitBtn.disabled = false;
             submitBtn.textContent = 'Отправить комментарий';
-            alert('Произошла ошибка при отправке комментария. Попробуйте ещё раз.');
+            alert('Ошибка при отправке комментария');
         });
     });
 
-    // Функция для создания элемента комментария
     function createCommentElement(commentData) {
         const div = document.createElement('div');
         div.className = 'comment mb-3 p-2 border rounded';
         div.setAttribute('data-comment-id', commentData.id);
-
         div.innerHTML = `
             <strong>${commentData.author}</strong>
             <small class="text-muted">${commentData.created_at}</small>
@@ -159,28 +268,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     data-comment-id="${commentData.id}">Удалить</button>
             <p>${commentData.content}</p>
         `;
-
-        // Добавляем обработчик удаления к новой кнопке
         const deleteBtn = div.querySelector('.delete-comment');
         deleteBtn.addEventListener('click', handleDeleteComment);
-
         return div;
     }
 
-    // Обработчик удаления комментария
     function handleDeleteComment(e) {
-        e.preventDefault(); // Предотвращаем стандартное поведение
         const commentId = e.target.getAttribute('data-comment-id');
-
-        if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) {
-            return;
-        }
-
-        // Показываем индикатор загрузки
-        const deleteBtn = e.target;
-        const originalText = deleteBtn.textContent;
-        deleteBtn.disabled = true;
-        deleteBtn.innerHTML = 'Удаление... <span class="spinner-border spinner-border-sm"></span>';
+        if (!confirm('Удалить комментарий?')) return;
 
         fetch('{% url "delete_comment_ajax" %}', {
             method: 'POST',
@@ -190,80 +285,24 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: `comment_id=${commentId}`
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Удаляем комментарий из DOM
-                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
-                if (commentElement) {
-                    commentElement.remove();
-                }
-                // Обновляем счётчик комментариев
-                updateCommentsCount(-1);
-                alert('Комментарий удалён');
-            } else {
-                alert('Ошибка: ' + data.error);
+                document.querySelector(`[data-comment-id="${commentId}"]`).remove();
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Произошла ошибка при удалении комментария. Попробуйте ещё раз.');
-        })
-        .finally(() => {
-            // Восстанавливаем кнопку
-            deleteBtn.disabled = false;
-            deleteBtn.textContent = originalText;
         });
     }
 
-    // Инициализация обработчиков для существующих кнопок
     document.querySelectorAll('.delete-comment').forEach(btn => {
         btn.addEventListener('click', handleDeleteComment);
     });
 
-    // Функция обновления счётчика комментариев
-    function updateCommentsCount(change) {
-        const counterElement = document.querySelector('h3');
-        if (!counterElement) return;
-
-        const match = counterElement.textContent.match(/\((\d+)\)/);
-        if (match) {
-            const currentCount = parseInt(match[1], 10);
-            const newCount = Math.max(0, currentCount + change); // Не допускаем отрицательных значений
-            counterElement.textContent = counterElement.textContent.replace(/\(\d+\)/, `(${newCount})`);
-        }
-    }
-});
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
+    // Лайки и избранное
     const likeBtn = document.getElementById('like-btn');
     const favoriteBtn = document.getElementById('favorite-btn');
 
-    // Функция для показа индикатора загрузки
-    function showLoading(button) {
-        button.disabled = true;
-        button.innerHTML += ' <span class="spinner-border spinner-border-sm" role="status"></span>';
-    }
-
-    // Функция для скрытия индикатора загрузки
-    function hideLoading(button, originalHTML) {
-        button.disabled = false;
-        button.innerHTML = originalHTML;
-    }
-
-    // Обработчик для лайка
     likeBtn.addEventListener('click', function() {
         const postId = this.getAttribute('data-post-id');
-        const originalHTML = this.innerHTML;
-
-        showLoading(this);
-
         fetch('{% url "post_like_ajax" %}', {
             method: 'POST',
             headers: {
@@ -272,41 +311,17 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: `post_id=${postId}`
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            hideLoading(this, originalHTML);
             if (data.success) {
-                // Обновляем кнопку
-                if (data.liked) {
-                    this.innerHTML = `❤️ ${data.likes_count}`;
-                    this.className = 'btn btn-danger';
-            this.setAttribute('data-liked', 'true');
-                } else {
-            this.innerHTML = `❤️ ${data.likes_count}`;
-            this.className = 'btn btn-submit';
-            this.setAttribute('data-liked', 'false');
-                }
+                this.innerHTML = `❤️ ${data.likes_count}`;
+                this.className = data.liked ? 'btn btn-danger' : 'btn btn-outline-danger';
             }
-        })
-        .catch(error => {
-            hideLoading(this, originalHTML);
-            console.error('Error:', error);
-            alert('Произошла ошибка при обработке лайка. Попробуйте ещё раз.');
         });
     });
 
-    // Обработчик для избранного
     favoriteBtn.addEventListener('click', function() {
         const postId = this.getAttribute('data-post-id');
-        const originalHTML = this.innerHTML;
-
-        showLoading(this);
-
         fetch('{% url "post_favorite_ajax" %}', {
             method: 'POST',
             headers: {
@@ -315,31 +330,11 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: `post_id=${postId}`
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            hideLoading(this, originalHTML);
             if (data.success) {
-                // Обновляем кнопку
-                if (data.favorited) {
-            this.innerHTML = `<img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> `;
-            this.className = 'btn btn-warning';
-            this.setAttribute('data-favorited', 'true');
-                } else {
-            this.innerHTML = `<img width="20" height="20" src="https://img.icons8.com/external-kmg-design-flat-kmg-design/32/external-bookmark-user-interface-kmg-design-flat-kmg-design.png" alt="external-bookmark-user-interface-kmg-design-flat-kmg-design"/> `;
-            this.className = 'btn btn-outline-warning';
-            this.setAttribute('data-favorited', 'false');
-                }
+                this.className = data.favorited ? 'btn btn-warning' : 'btn btn-outline-warning';
             }
-        })
-        .catch(error => {
-            hideLoading(this, originalHTML);
-            console.error('Error:', error);
-            alert('Произошла ошибка при добавлении в избранное. Попробуйте ещё раз.');
         });
     });
 });

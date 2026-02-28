@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
-from main.storage import CustomStorage
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -224,10 +223,7 @@ customColorPalette = [
         },
     ]
 
-# CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
-# CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png', 'jpg'] 
-# CKEDITOR_5_FILE_STORAGE = "main.storage.CustomStorage" 
-# CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_5_FILE_STORAGE = "main.storage.CustomStorage"
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
@@ -244,7 +240,7 @@ CKEDITOR_5_CONFIGS = {
                       'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', ],
         },
         'simpleUpload': {
-            'uploadUrl': '/ckeditor/upload/', 
+            'uploadUrl': '/upload/', 
         },
         'placeholder': 'Заголовок',
     },
@@ -320,25 +316,6 @@ CKEDITOR_5_CONFIGS = {
 
 }
 
-CKEDITOR_UPLOAD_PATH = "uploads/"
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-#     'PAGE_SIZE': 10,
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework.authentication.BasicAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
-#     'DEFAULT_RENDERER_CLASSES': (
-#         'rest_framework.renderers.JSONRenderer',
-#     ),
-#     'DEFAULT_PARSER_CLASSES': (
-#         'rest_framework.parsers.JSONParser',
-#     )
-# }
 
 DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,

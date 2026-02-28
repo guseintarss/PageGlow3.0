@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="post">
+    <div class="author-profile-header">
+        <div class="user-photo">
+            {% if author.photo %}
+            <img class="user-img-article" src="{{ author.photo.url }}">
+            {% else %}
+            <img class="user-img-article" src="{{ default_image }}">
+            {% endif %}
+        </div>
+        
+        <div class="author-profile-info">
+            <h1>{{ author.username }}</h1>
+            {% if author.first_name or author.last_name %}
+            <p class="author-fullname">{{ author.last_name }} {{ author.first_name }}</p>
+            {% endif %}
+            
+            <div class="author-stats">
+                <span><strong>{{ published_posts.count }}</strong> статей</span>
+                <span><strong>{{ subscribers_count }}</strong> подписчиков</span>
+                <span><strong>{{ subscriptions_count }}</strong> подписок</span>
+            </div>
+            
+            {% if author.about_me %}
+            <p class="author-bio">{{ author.about_me }}</p>
+            {% endif %}
+            
+            <div class="author-actions">
+                {% if is_own_profile %}
+                <a class="btn btn-primary" href="{% url 'users:edit_profile' %}">Редактировать профиль</a>
+                {% elif user.is_authenticated %}
+                <button id="subscribe-btn" 
+                        class="btn {% if is_subscribed %}btn-secondary{% else %}btn-primary{% endif %}"
+                        data-author-id="{{ author.id }}">
+                    {% if is_subscribed %}Отписаться{% else %}Подписаться{% endif %}
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="post">
+    <h4>Статьи автора</h4>
+</div>
+
+{% for post in published_posts %}
+<article class="post">
+    <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+    <p class="meta">
+        Категория: {{ post.cat.name }} 
+        &bull; {{ post.time_update|date:"d.m.Y" }}
+        &bull; 👁 {{ post.views }}
+        &bull; ❤️ {{ post.number_of_likes }}
+    </p>
+    {% if post.photo %}
+    <p><img class="img-article-left thumb" src="{{ post.photo.url }}" alt=""></p>
+    {% endif %}
+    {% autoescape off %}
+    <p class="meta">{{ post.meta }}</p>
+    {{ post.content|truncatewords:20|safe }}
+    {% endautoescape %}
+    <p><a class="read-more" href="{{ post.get_absolute_url }}">Читать далее→</a></p>
+</article>
+{% empty %}
+<div class="post">
+    <p>У автора пока нет опубликованных статей.</p>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const subscribeBtn = document.getElementById('subscribe-btn');
+    if (subscribeBtn) {
+        subscribeBtn.addEventListener('click', function() {
+            const authorId = this.getAttribute('data-author-id');
+            const btn = this;
+            
+            fetch('{% url "subscribe_author" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `author_id=${authorId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.subscribed) {
+                        btn.textContent = 'Отписаться';
+                        btn.className = 'btn btn-secondary';
+                    } else {
+                        btn.textContent = 'Подписаться';
+                        btn.className = 'btn btn-primary';
+                    }
+                    // Обновляем счётчик подписчиков
+                    const statsSpan = document.querySelector('.author-stats span:nth-child(2) strong');
+                    if (statsSpan) {
+                        statsSpan.textContent = data.subscribers_count;
+                    }
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
