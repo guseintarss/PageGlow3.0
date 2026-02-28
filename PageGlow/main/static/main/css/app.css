@@ -327,6 +327,7 @@ a:hover{ text-decoration: underline; }
     box-shadow: var(--shadow);
     padding:55px 20px 20px 20px;
     transition: transform .2s;
+    z-index: 1;
 }
 .menu-list{
     display:block;
@@ -902,6 +903,10 @@ input:focus, textarea:focus, select:focus{
   box-shadow: var(--shadow);
   z-index: 1000;
   overflow: hidden;
+}
+.notific-cont{
+  position: relative;
+  display: inline-block;
 }
 .notification-header {
   display: flex;

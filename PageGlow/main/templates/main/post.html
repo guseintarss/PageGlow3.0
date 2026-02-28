@@ -2,11 +2,12 @@
 
 {% block content %}
 <!-- Прогресс чтения -->
-<div class="reading-progress-bar" id="reading-progress"></div>
+<!-- <div class="reading-progress-bar" id="reading-progress"></div> -->
+<div id="reading-progress" style="position: fixed; top: 0; left: 0; height: 3px; background: #007bff; width: 0%;"></div>
 
 <article class="post">
     <div class="post-content">
-        <h1>{{ post.title }}</h1>
+        
         <div class="post-meta-header">
             <div class="author-info">
                 {% if post.author.photo %}
@@ -27,7 +28,7 @@
             </button>
             {% endif %}
         </div>
-        
+        <h1>{{ post.title }}</h1>
         <p class="meta">
             Категория: <a href="{{ post.cat.get_absolute_url }}">{{ post.cat.name }}</a>
             &bull; {{ reading_time }} мин чтения
