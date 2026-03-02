@@ -21,8 +21,9 @@ urlpatterns = [
     path('ajax/favorite/', views.PostFavoriteAjaxView.as_view(), name='post_favorite_ajax'),
     path('ajax/add-comment/', views.AddCommentAjaxView.as_view(), name='add_comment_ajax'),
     path('ajax/delete-comment/', views.DeleteCommentAjaxView.as_view(), name='delete_comment_ajax'),
-    path('upload/', views.CKEditorUploadView.as_view(), name='ckeditor_upload'),
-    # Новые маршруты
+
+    # path('upload/', views.CKEditorUploadView.as_view(), name='ckeditor_upload'),
+    
     path('popular/', views.PopularPostsView.as_view(), name='popular'),
     path('feed/', views.SubscriptionFeedView.as_view(), name='subscription_feed'),
     path('ajax/subscribe/', views.SubscribeAuthorView.as_view(), name='subscribe_author'),
