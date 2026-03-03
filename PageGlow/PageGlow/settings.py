@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 from decouple import config
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBAG')
+DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ["pageglow.ru", "www.pageglow.ru", '127.0.0.1']
+ALLOWED_HOSTS=["pageglow.ru", "www.pageglow.ru", '127.0.0.1']
 
 INTERNAL_IPS = ["127.0.0.1"]
 
@@ -113,11 +112,11 @@ WSGI_APPLICATION = 'PageGlow.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'djanglow',
-        'USER': 'temirlan',
-        'PASSWORD': config('password_bd'),
-        'HOST': '195.133.145.235',
-        'PORT': '5432',
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USERNAME'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'HOST': config('DATABASE_HOST'),
+        'PORT': config('DATABASE_PORT'),
     }
 }
 
@@ -157,11 +156,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-
-STATIC_ROOT = BASE_DIR / '/var/www/pageglow/PageGlow3.0/PageGlow/staticfiles/'
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]
+STATIC_ROOT = os.path.join(BASE_DIR, '/static')
+# STATIC_ROOT = BASE_DIR / '/var/www/pageglow/PageGlow3.0/PageGlow/staticfiles/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # MEDIA_ROOT = BASE_DIR / 'media'
@@ -223,7 +222,6 @@ customColorPalette = [
         },
     ]
 
-CKEDITOR_5_FILE_STORAGE = "main.storage.CustomStorage"
 CKEDITOR_5_CONFIGS = {
     'default': {
         'language': 'ru-RU',
