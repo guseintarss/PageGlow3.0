@@ -1,7 +1,6 @@
 
 import logging
 import os
-from venv import logger
 from bleach import clean
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
@@ -36,6 +35,19 @@ from .forms import AddPostForm, PostUpdateForm, UploadFileForm, CommentForm
 from .models import Post, Category, TagPost, UploadFiles, Comment, Subscription, Notification
 from .utils import DataMixin
 
+logger = logging.getLogger(__name__)
+
+
+def health_check(request):
+    """Health check endpoint for Docker/Kubernetes"""
+    try:
+        from django.core.cache import cache
+        cache.set('health_check', 'ok', 10)
+        cache.get('health_check')
+        return JsonResponse({'status': 'healthy', 'database': 'ok', 'cache': 'ok'})
+    except Exception as e:
+        logger.error(f'Health check failed: {str(e)}')
+        return JsonResponse({'status': 'unhealthy', 'error': str(e)}, status=503)
 
 
 

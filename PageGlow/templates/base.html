@@ -183,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (toggleButton) {
                 toggleButton.setAttribute('data-bs-theme', 'dark');
                 toggleButton.textContent = '🌙';
+                toggleButton.setAttribute('aria-pressed', 'true');
             }
             localStorage.setItem('theme', 'dark');
         } else {
@@ -190,6 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlElement.removeAttribute('data-bs-theme');
             if (toggleButton) {
                 toggleButton.removeAttribute('data-bs-theme');
+                toggleButton.textContent = '☀️';
+                toggleButton.setAttribute('aria-pressed', 'false');
             }
             localStorage.removeItem('theme');
         }
@@ -201,13 +204,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Обработчик клика для переключения темы
     if (toggleButton) {
-        toggleButton.addEventListener('click', () => {
+        toggleButton.addEventListener('click', (e) => {
+            e.preventDefault();
             const isCurrentlyDark = body.classList.contains('dark-mode');
-            toggleButton.textContent = '☀️'; 
             setTheme(!isCurrentlyDark);
         });
     }
 });
+
 
 </script>
 <script>

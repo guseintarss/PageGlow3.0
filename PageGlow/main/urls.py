@@ -6,6 +6,7 @@ from .feeds import LatestPostsFeed
 
 
 urlpatterns = [
+    path('health/', views.health_check, name='health_check'),
     path('', views.MainHome.as_view(), name='home'),
     path('admin/', admin.site.urls, name='admin'),
     path('about/', views.about, name='about'),
@@ -31,4 +32,3 @@ urlpatterns = [
     path('ajax/notifications/read/', views.MarkNotificationsReadView.as_view(), name='mark_notifications_read'),
     path('rss/', LatestPostsFeed(), name='rss_feed'),
 ]
-
